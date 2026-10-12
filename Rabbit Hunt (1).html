@@ -1,0 +1,1824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rabbit Hunt</title>
+<style>
+:root{--bg:#87ceeb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b2a3a}}
+:root[data-theme="dark"]{--bg:#1b2a3a}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;user-select:none;-webkit-user-select:none}
+#c{position:fixed;top:0;right:0;bottom:0;left:0;width:100%;height:100%;display:block}
+.hide{display:none!important}
+button{font:inherit;font-weight:800;border:0;border-radius:14px;padding:12px 22px;color:#fff;background:linear-gradient(#ffa14a,#f26b1d);box-shadow:0 4px 0 #b34a10;cursor:pointer;min-width:220px}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 #b34a10}
+button:disabled{background:#8a8a8a;box-shadow:0 4px 0 #666;cursor:default}
+.panel{position:fixed;top:0;right:0;bottom:0;left:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px;background:rgba(20,35,20,.5);backdrop-filter:blur(3px);color:#fff;text-align:center;overflow:auto}
+.panel.on{display:flex}
+h1{font-size:min(14vw,72px);margin:0;color:#fff;text-shadow:0 5px 0 #d2691e}
+h2{margin:0}
+.tag{margin:0;opacity:.9;max-width:480px}
+.side{right:auto;width:min(380px,100%);align-items:stretch;justify-content:flex-start;background:rgba(20,35,20,.88);text-align:left}
+.side button{min-width:0}
+#tabs{display:flex;flex-wrap:wrap;gap:6px}#tabs button{padding:8px 10px;font-size:12px;flex:1}
+.item{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);padding:8px;border-radius:12px}
+.item i{width:34px;height:34px;border-radius:50%;border:2px solid #fff;flex:none}
+.item b{flex:1}.item button{padding:8px 12px;min-width:0}
+.card{background:rgba(255,255,255,.14);border-radius:16px;padding:12px 16px;width:min(340px,90vw)}
+ol{text-align:left;max-width:420px;line-height:1.5;margin:0}
+#hud{position:fixed;top:0;right:0;bottom:0;left:0;pointer-events:none}
+#hud *{pointer-events:auto}
+#pb{position:absolute;left:12px;top:calc(12px + env(safe-area-inset-top,0px));min-width:0;padding:8px 14px}
+#hr{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+#hearts button{min-width:0;padding:4px 8px;margin-left:4px;font-size:22px;background:#fff;box-shadow:0 3px 0 #bbb;color:#e0245e}
+.pill{background:rgba(0,0,0,.55);color:#fff;border-radius:20px;padding:6px 14px;font-weight:800}
+.pill.warn{background:#d32f2f;animation:pulse .5s infinite alternate}
+#big{position:fixed;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;font-size:min(22vw,160px);font-weight:900;color:#fff;text-shadow:0 6px 0 #d2691e,0 0 30px rgba(0,0,0,.4);pointer-events:none;text-align:center;animation:pop .6s ease-out}
+.fx{z-index:20;position:fixed;transform:translate(-50%,-50%);font-weight:900;font-size:28px;color:#ff3b3b;text-shadow:0 2px 0 #fff;pointer-events:none;animation:up .8s forwards}
+.fx.g{color:#ffe14d;text-shadow:0 2px 0 #b34a10;font-size:34px}
+.trophy{font-size:96px;animation:pop .8s ease-out}
+.hr3{font-size:44px;margin:0;letter-spacing:6px}
+.acc{font-size:26px;font-weight:900;margin:0;color:#ffe14d}
+.giftb{background:none;box-shadow:none;min-width:0;padding:0;display:flex;flex-direction:column;align-items:center;font-size:13px;letter-spacing:1px}
+.giftb span{font-size:64px;display:block;animation:shake 1.6s infinite}
+#gift,#rate{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9;display:flex;align-items:center;justify-content:center;background:rgba(10,20,10,.72)}
+.gbox{font-size:130px;animation:shake .9s}
+.gq{background:linear-gradient(#fffaf0,#ffe3ae);color:#4a2c10;border-radius:22px;padding:22px 26px;width:min(420px,88vw);text-align:center;animation:pop .7s ease-out;box-shadow:0 10px 40px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:10px;align-items:center}
+.gq p{margin:0;font:italic 21px/1.5 Georgia,"Times New Roman",serif}
+.gq small{opacity:.7}
+.gicon{font-size:46px}
+.medal{display:block;filter:drop-shadow(0 4px 6px rgba(0,0,0,.4))}
+.trophy .medal{margin:0 auto;animation:float 2.4s ease-in-out infinite}
+.lcard{display:flex;align-items:center;gap:16px;text-align:left;width:min(400px,92vw)}
+.lcard .medal{flex:none}
+.lcard.lock .medal{filter:grayscale(1) opacity(.5)}
+.linfo{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.linfo button{padding:8px 18px;min-width:0}
+.mini{display:inline-block;vertical-align:middle;margin:0 2px}
+.mini .medal{filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+.mini.off{filter:grayscale(1);opacity:.45}
+@keyframes float{50%{transform:translateY(-6px)}}
+.dm{display:flex;gap:6px;flex-wrap:wrap}
+.dm button{padding:6px 10px;min-width:0;font-size:12px}
+.dm .d-easy{background:linear-gradient(#7ed87e,#3aa63a);box-shadow:0 4px 0 #26752b}
+.dm .d-hard{background:linear-gradient(#ff7b7b,#d62f2f);box-shadow:0 4px 0 #8f1c1c}
+.mb{justify-content:center;align-items:center}
+.mb small{opacity:.8;letter-spacing:1px}
+.mb button{opacity:.6}.mb button.sel{opacity:1;outline:3px solid #fff}
+#dock{position:fixed;z-index:6;right:12px;top:calc(12px + env(safe-area-inset-top,0px));display:flex;flex-direction:column;gap:10px}
+#dock button{min-width:0;width:52px;height:52px;padding:0;border-radius:50%;font-size:24px;display:flex;align-items:center;justify-content:center}
+button{transition:transform .12s,filter .12s}
+button:hover{filter:brightness(1.1);transform:translateY(-2px)}
+#menu h1{background:linear-gradient(90deg,#fff 20%,#ffd36b 50%,#fff 80%);background-size:100% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 5px 0 #d2691e)}
+@keyframes shine{to{background-position:-200% 0}}
+.fl{position:absolute;bottom:-40px;font-size:30px;opacity:.7;pointer-events:none;animation:rise 9s linear infinite}
+@keyframes rise{to{transform:translateY(-110vh) rotate(25deg);opacity:0}}
+.rip{position:fixed;width:12px;height:12px;margin:-6px 0 0 -6px;border:3px solid #fff;border-radius:50%;pointer-events:none;animation:rip .55s ease-out forwards}
+@keyframes rip{to{transform:scale(6);opacity:0}}
+.cf{position:fixed;top:-30px;font-size:26px;pointer-events:none;z-index:7;animation:cf 3s ease-in forwards}
+@keyframes cf{to{transform:translateY(110vh) rotate(540deg);opacity:.8}}
+#nametag{position:fixed;transform:translate(-50%,-100%);padding:4px 12px;border-radius:14px;background:rgba(255,255,255,.94);color:#3a2410;font-weight:900;font-size:15px;pointer-events:none;box-shadow:0 3px 10px rgba(0,0,0,.35);white-space:nowrap}
+#nametag::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:rgba(255,255,255,.94)}
+.rn{margin:0;font-weight:800;color:#ffe9b0}
+.field{border:0;border-radius:12px;padding:12px;font:inherit;font-size:16px;width:100%;box-sizing:border-box}
+textarea.field{resize:vertical;min-height:110px}
+.warn{color:#ffd0a8;min-height:1.3em;margin:0;font-weight:700;font-size:14px;white-space:pre-line}
+.field.bad{outline:3px solid #ff6b6b}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-left:3px;border:2px solid #fff;vertical-align:middle}
+.dot.got{opacity:.35}
+#tbar{position:absolute;top:0;left:0;right:0;height:6px;background:rgba(0,0,0,.25)}
+#tbar,#tbar *{pointer-events:none!important}
+#tbar i{display:block;height:100%;width:100%;background:#4cd964;transition:width .25s linear,background .3s}
+#vig{position:fixed;top:0;right:0;bottom:0;left:0;pointer-events:none;opacity:0;box-shadow:inset 0 0 120px 40px rgba(220,30,30,.65);transition:opacity .3s}
+#vig.on{opacity:1;animation:vpulse .8s ease-in-out infinite alternate}
+@keyframes vpulse{from{opacity:.3}to{opacity:1}}
+#sub{position:fixed;top:17%;left:0;right:0;text-align:center;font-weight:900;font-size:min(6vw,30px);color:#fff;text-shadow:0 3px 0 #b34a10,0 0 16px rgba(0,0,0,.5);pointer-events:none;opacity:0;transition:opacity .4s;padding:0 12px}
+#sub.on{opacity:1}
+.link{background:none;box-shadow:none;min-width:0;padding:4px 8px;font-size:13px;text-decoration:underline;color:#ffd7a8}
+.foot{font-size:12px;opacity:.65;margin:0;text-align:center}
+.ucard{background:rgba(255,255,255,.12);border-radius:14px;padding:10px 12px;text-align:left;font-size:13px;line-height:1.55}
+.star{background:none;box-shadow:none;min-width:0;padding:2px 4px;font-size:42px;color:#e0a312}
+.star:hover{transform:scale(1.2)}
+.abtn{display:inline-flex;align-items:center;justify-content:center;border-radius:14px;padding:6px 10px;font-size:12px;font-weight:800;color:#fff;text-decoration:none;background:linear-gradient(#4cd964,#1fa03a);box-shadow:0 4px 0 #14702a}
+#auModes button.sel{outline:3px solid #fff}
+.pw{position:relative;width:100%}
+.pw .field{padding-right:54px}
+.pw button{position:absolute;right:4px;top:50%;transform:translateY(-50%);min-width:0;width:40px;height:40px;padding:0;background:none;box-shadow:none;font-size:20px;display:flex;align-items:center;justify-content:center}
+.pw button:hover,.pw button:active{transform:translateY(-50%)}
+.lo{position:absolute;left:12px;top:calc(12px + env(safe-area-inset-top,0px));min-width:0;padding:8px 14px;font-size:13px}
+#ideaBtn{position:fixed;right:76px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:8;min-width:0;width:54px;height:54px;padding:0;border-radius:50%;font-size:26px;display:flex;align-items:center;justify-content:center}
+#ideaBadge{position:absolute;top:-4px;right:-4px;background:#d62f2f;color:#fff;border-radius:50%;min-width:20px;height:20px;font-size:12px;line-height:20px;text-align:center;font-weight:800}
+#idea{position:fixed;top:64px;left:50%;transform:translateX(-50%);z-index:8;width:min(340px,92vw)}
+.ic{position:relative;background:rgba(255,250,235,.97);color:#3a2410;border-radius:16px;padding:12px 14px;box-shadow:0 8px 28px rgba(0,0,0,.45);animation:pop .3s ease-out;text-align:left;font-size:13px;line-height:1.5;display:flex;flex-direction:column;gap:6px}
+.ix{position:absolute;right:8px;top:6px;min-width:0;padding:2px 8px;background:rgba(0,0,0,.3);box-shadow:none}
+#ideaMap svg{width:100%;height:auto;background:rgba(0,0,0,.07);border-radius:8px;display:block}
+.emo{position:fixed;transform:translate(-50%,-100%);z-index:7;pointer-events:none}
+.emo-in{background:#fff;border-radius:18px;padding:4px 10px;font-size:30px;line-height:1.1;box-shadow:0 4px 12px rgba(0,0,0,.4);text-align:center;animation:emo 2.8s ease-out forwards}
+.emo-in small{display:block;font-size:12px;font-weight:800;color:#3a2410}
+@keyframes emo{0%{opacity:0;transform:scale(.3) translateY(10px)}12%{opacity:1;transform:scale(1.15)}22%{transform:scale(1)}85%{opacity:1;transform:translateY(-14px)}100%{opacity:0;transform:translateY(-22px)}}
+html{-webkit-text-size-adjust:100%}
+body{overscroll-behavior:none}
+button,.field{touch-action:manipulation}
+@media (max-width:600px){
+  button{padding:12px 16px;min-width:180px}
+  h1{font-size:44px}
+  .panel{padding:12px;gap:8px}
+  #dock{right:8px;gap:8px}#dock button{width:44px;height:44px;font-size:20px}
+  #hr{right:8px;gap:4px}.pill{padding:4px 10px;font-size:13px}#hearts button{font-size:18px;padding:2px 6px}
+  #pb{left:8px;padding:6px 12px}
+  #rb{right:8px;width:calc(100vw - 16px);height:min(70vh,520px);bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+  .rbin input{font-size:16px}
+  #rbBtn,#ideaBtn{width:48px;height:48px;font-size:24px}#ideaBtn{right:68px}
+  #idea{top:56px}
+  .lcard{gap:10px}.card{width:92vw}
+  .hcard{padding:12px}
+  .msg{font-size:15px}
+}
+@media (max-height:520px){#dock{flex-direction:row;flex-wrap:wrap;justify-content:flex-end;max-width:60vw;top:8px}}
+#rnIn{border:0;border-radius:12px;padding:12px;font:inherit;font-size:16px}
+#rbBtn{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:8;min-width:0;width:54px;height:54px;padding:0;border-radius:50%;font-size:28px;display:flex;align-items:center;justify-content:center}
+#rb{position:fixed;right:14px;bottom:calc(80px + env(safe-area-inset-bottom,0px));z-index:8;width:min(360px,calc(100vw - 28px));height:min(480px,68vh);display:flex;flex-direction:column;background:rgba(22,32,26,.96);color:#fff;border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.5);overflow:hidden;animation:pop .25s ease-out}
+.rbh{display:flex;align-items:center;gap:10px;padding:10px 12px;background:linear-gradient(#ffa14a,#f26b1d)}
+.rbh div{flex:1;display:flex;flex-direction:column;line-height:1.15}.rbh small{opacity:.9}
+.rbav{font-size:28px}
+.rbh button{min-width:0;padding:4px 10px;background:rgba(0,0,0,.25);box-shadow:none}
+#rbMsgs{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:86%;padding:8px 12px;border-radius:14px;font-size:14px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.bot{background:rgba(255,255,255,.14);align-self:flex-start;border-bottom-left-radius:4px}
+.msg.user{background:#f26b1d;align-self:flex-end;border-bottom-right-radius:4px}
+#rbChips{display:flex;flex-wrap:wrap;gap:6px;padding:0 10px 8px}
+#rbChips button{min-width:0;padding:5px 10px;font-size:12px;border-radius:14px;background:rgba(255,255,255,.16);box-shadow:none}
+.rbin{display:flex;gap:6px;padding:8px;border-top:1px solid rgba(255,255,255,.15)}
+.msg.bot .fu{margin-top:8px;color:#ffe9b0;font-weight:700}
+.qchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.qchips button{min-width:0;padding:5px 10px;font-size:12px;border-radius:14px;background:rgba(255,255,255,.16);box-shadow:none}
+.qchips .lbl{font-size:12px;opacity:.75}
+.msg.note{opacity:.9;font-style:italic;background:rgba(255,255,255,.08)}
+.rbin input{flex:1;min-width:0;border:0;border-radius:12px;padding:10px 12px;font:inherit;font-size:14px}
+.rbin button{min-width:0;padding:8px 14px;box-shadow:none}
+.gq2{margin:0;max-width:440px;font:italic 17px/1.5 Georgia,serif;color:#ffe9b0}
+@keyframes shake{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg) scale(1.1)}40%{transform:rotate(12deg) scale(1.15)}60%{transform:rotate(-10deg) scale(1.2)}80%{transform:rotate(8deg) scale(1.1)}}
+#end{justify-content:flex-start}#end>:first-child{margin-top:auto}#end>:last-child{margin-bottom:auto}
+.hcard{margin:auto;width:min(560px,94vw);max-height:90vh;display:flex;flex-direction:column;gap:10px;align-items:center;background:rgba(0,0,0,.35);border-radius:22px;padding:18px}
+#histBox,#admBox{width:100%;flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:6px}
+@media (max-width:700px){.side{top:auto;height:60%;width:100%}}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes up{to{transform:translate(-50%,-150%);opacity:0}}
+@keyframes pulse{to{transform:scale(1.1)}}
+
+
+
+/* ---- mobile friendly: only small screens are affected, desktop looks exactly as before ---- */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@media (max-width:600px){
+  .hcard,.card,.side{box-sizing:border-box}
+  .panel{justify-content:safe center}
+  body:has(#shop.on,#hist.on,#settings.on,#name.on,#fb.on) #dock{flex-direction:row;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100vw - 16px)}
+  #tabs button{min-width:0;padding:10px 6px}
+  #menu{padding:12px 62px calc(84px + env(safe-area-inset-bottom,0px)) 62px}
+  #menu h1{font-size:min(9.5vw,40px)}
+  .panel{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  #dock button{min-height:42px}
+  .field{min-height:46px}
+}
+@media (max-height:520px){
+  #menu{justify-content:flex-start;overflow-y:auto;padding:62px 16px 76px;gap:6px}
+  #menu h1{font-size:34px}
+  #menu>button:not(.lo){padding:8px 14px;min-width:150px}
+  .panel{justify-content:safe center}
+  .panel{padding-top:56px}
+  .hcard{max-height:calc(100vh - 70px)}
+}
+@media (max-height:520px) and (min-width:601px){#dock button{width:42px;height:42px;font-size:19px}}
+
+/* ---- phones: more of the game screen is visible while playing ---- */
+@media (max-width:700px),(max-height:520px),(pointer:coarse){
+  body:has(#hud:not(.hide)) #rbBtn,body:has(#hud:not(.hide)) #ideaBtn{width:38px;height:38px;font-size:18px}
+  body:has(#hud:not(.hide)) #ideaBtn{right:60px}
+  #hr{gap:3px}#hr .pill{font-size:11px;padding:2px 8px}
+  #hearts button{font-size:14px;padding:1px 5px;min-height:30px}
+  #pb{padding:4px 10px;min-height:32px}
+}
+
+/* ---- one rabbit icon for the password box (the browser's own show-password icon is hidden) ---- */
+input::-ms-reveal,input::-ms-clear{display:none}
+input::-webkit-credentials-auto-fill-button{visibility:hidden;display:none!important;pointer-events:none}
+#pwEye{display:flex;align-items:center;justify-content:center;min-width:0;padding:2px 6px;background:none;box-shadow:none;filter:none}
+#pwEye .rabeye{display:block;width:40px;height:40px}#pwEye{width:46px;height:46px}
+
+/* ---- levels screen shows all five levels clearly; idea screen is fair (the game screen is hidden while it is open) ---- */
+#levels{overflow-y:auto;justify-content:safe center}
+#lv{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,92vw),1fr));gap:12px;width:min(1120px,96vw);margin:0 auto}
+#lv .lcard{width:auto;box-sizing:border-box;height:100%}
+.lst{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.6px;padding:2px 9px;border-radius:99px;background:#e0a100;color:#fff}
+.lst.done{background:#2e9e4f}.lst.lk{background:#7a7a7a}
+body:has(#idea:not(.hide))::before{content:"";position:fixed;top:0;right:0;bottom:0;left:0;z-index:7;background:linear-gradient(#17323a,#0f1d22)}
+#idea{top:50%;transform:translate(-50%,-50%);max-height:92vh;overflow:auto}
+
+/* ---- feedback saved message in white ---- */
+#fbMsg{color:#fff}
+
+/* ---- black mouse cursor (the rabbits are white, so a white cursor cannot be seen) ---- */
+:root{--rhcur:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M5 3v22l5.6-5.2 3.6 8.4 4.2-1.8-3.6-8.2H22z' fill='%23000' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E")}
+@media (pointer:fine){html,body,canvas{cursor:var(--rhcur) 5 3,default}button,.link,[data-a]{cursor:var(--rhcur) 5 3,pointer}input,textarea{cursor:text}}
+/* ---- cookie notice ---- */
+#ckBar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:60;max-width:560px;margin:0 auto;background:rgba(20,34,38,.97);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;box-shadow:0 10px 30px rgba(0,0,0,.4);font-size:13px;line-height:1.35}
+#ckBar p{margin:0;flex:1 1 220px}
+#ckBar div{display:flex;gap:8px;flex-wrap:wrap}
+#ckBar button{min-width:0;padding:8px 14px;font-size:13px}
+#ckBar .alt{background:#5b6b70;box-shadow:0 4px 0 #3d4a4e}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="nametag" class="hide"></div>
+<div id="hud" class="hide">
+  <div id="tbar"><i></i></div>
+  <button id="pb" data-a="pause" aria-label="Pause">II</button>
+  <div id="hr"><div id="hearts"></div><div class="pill">&#129689; <span id="coins">0</span></div><div class="pill" id="timeP">TIME: <span id="time">60</span></div><div class="pill" id="capP"></div></div>
+</div>
+<div id="big"></div>
+<div id="vig"></div>
+<div id="sub"></div>
+
+<section id="menu" class="panel on"><button class="lo" data-a="logout">LOG OUT</button>
+  <h1>RABBIT HUNT</h1>
+  <p class="tag">One carrot. One thief. 1,000+ rabbits. Can you click the right one?</p>
+  <p id="stats"></p>
+  <div class="dm mb"></div>
+  <button data-a="play">PLAY</button>
+  <button data-a="levels">LEVELS</button>
+</section>
+<section id="levels" class="panel"><h2>SELECT LEVEL</h2><div class="dm mb"></div><div id="lv"></div><button data-a="home">BACK</button></section>
+<section id="shop" class="panel side">
+  <h2>SHOP &middot; &#129689; <span id="shopCoins"></span></h2>
+  <p class="tag">Each level's theme, rabbit colors and scarves are free while you play that level. Buy them here to use them anywhere.</p>
+  <div id="tabs"><button data-a="tab" data-c="bg">THEMES</button><button data-a="tab" data-c="rabbit">RABBIT</button><button data-a="tab" data-c="scarf">SCARF</button><button data-a="tab" data-c="design">SCARF DESIGN</button></div>
+  <div id="items"></div>
+  <button data-a="home">BACK</button>
+</section>
+<section id="settings" class="panel"><h2>SETTINGS</h2><div id="setBox"></div><p class="tag">Shortcuts: H history &middot; S shop &middot; L levels &middot; O settings &middot; N name your rabbit &middot; F feedback &middot; C chat &middot; P pause &middot; Esc back. Press a shortcut (or tap its icon) again to close it.</p><button data-a="how">HOW TO PLAY</button><button id="rs" data-a="reset">RESET PROGRESS</button><button data-a="logout">LOG OUT</button><button data-a="back">BACK</button></section>
+<section id="hist" class="panel"><div class="hcard"><h2>PLAYER HISTORY</h2><div id="histBox"></div><button data-a="home">BACK</button></div></section>
+<section id="name" class="panel side"><h2>NAME YOUR CARROT RABBIT</h2><p>The name shows above your rabbit in the shop preview and when you catch it.</p><input id="rnIn" maxlength="14" placeholder="e.g. Bandit" autocomplete="off"><button data-a="rnsave">SAVE NAME</button><button data-a="home">BACK</button></section>
+<section id="auth" class="panel"><h1>RABBIT HUNT</h1><div class="hcard" style="width:min(400px,94vw)"><h2 id="auTitle">Log in</h2>
+  <input id="auUser" class="field" maxlength="64" autocomplete="username" placeholder="Username">
+  <div class="pw" id="pwBox"><input id="auPass" class="field" type="password" maxlength="64" autocomplete="current-password" placeholder="Password"><button type="button" id="pwEye" data-a="pweye" aria-label="Show password" title="Show password"><svg class="rabeye" data-open="0" viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><g transform="rotate(-9 15 16)"><ellipse cx="15" cy="10" rx="4.6" ry="10" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.5"/><ellipse cx="15" cy="11.5" rx="2.3" ry="6.8" fill="#ffc4d2"/></g><g transform="rotate(9 33 16)"><ellipse cx="33" cy="10" rx="4.6" ry="10" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.5"/><ellipse cx="33" cy="11.5" rx="2.3" ry="6.8" fill="#ffc4d2"/></g><ellipse cx="24" cy="30" rx="18" ry="15.5" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.6"/><circle cx="12" cy="35" r="3.2" fill="#ffb3c6" opacity=".65"/><circle cx="36" cy="35" r="3.2" fill="#ffb3c6" opacity=".65"/><path d="M22 33.2h4l-2 2.4z" fill="#f48aa5"/><path d="M20.4 37.2q1.8 2.2 3.6.2q1.8 2 3.6-.2" fill="none" stroke="#c9a98a" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="15.0" cy="36.5" rx="3.6" ry="4.4" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.4"/><ellipse cx="16.5" cy="27.6" rx="6.2" ry="5.8" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.5"/><path d="M14.4 22.9v3.1M16.5 22.3v3.7M18.6 22.9v3.1" stroke="#c9a98a" stroke-width="1.1" stroke-linecap="round"/><ellipse cx="16.5" cy="30" rx="2.4" ry="1.9" fill="#ffc4d2"/><ellipse cx="33.0" cy="36.5" rx="3.6" ry="4.4" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.4"/><ellipse cx="31.5" cy="27.6" rx="6.2" ry="5.8" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.5"/><path d="M29.4 22.9v3.1M31.5 22.3v3.7M33.6 22.9v3.1" stroke="#c9a98a" stroke-width="1.1" stroke-linecap="round"/><ellipse cx="31.5" cy="30" rx="2.4" ry="1.9" fill="#ffc4d2"/></svg></button></div>
+  <div class="pw hide" id="pwBox2"><input id="auPass2" class="field" type="password" maxlength="64" autocomplete="new-password" placeholder="Confirm new password"></div>
+  <p id="authMsg" class="warn"></p>
+  <button id="auGo" data-a="authgo">LOG IN</button>
+  <button id="forgotBtn" class="link hide" data-a="forgot">Forgot password?</button>
+  <div class="dm" id="auModes"></div>
+  <p id="auHint" class="foot"></p></div></section>
+<section id="fb" class="panel"><div class="hcard"><h2>YOUR FEEDBACK</h2><p class="tag">Tell us what you think of Rabbit Hunt.</p>
+  <textarea id="fbText" class="field" rows="5" maxlength="500" placeholder="Write your opinion here... (please be kind: bad words are removed)"></textarea>
+  <p id="fbMsg" class="warn"></p><button data-a="fbsave">SAVE FEEDBACK</button><button data-a="home">BACK</button></div></section>
+<section id="admin" class="panel"><div class="hcard" style="width:min(720px,96vw)"><h2>DASHBOARD</h2><p class="tag" id="admInfo"></p><div id="admBox"></div>
+  <div class="dm"><button data-a="admrefresh">REFRESH</button><button data-a="admout">LOG OUT</button></div></div></section>
+<section id="how" class="panel">
+  <h2>HOW TO PLAY</h2>
+  <ol><li>Watch the rabbits.</li><li>Find the rabbits carrying a carrot: Level 1 has 1, Level 5 has 5.</li><li>Look for the thief scarf.</li><li>Move your mouse over the rabbit.</li><li>Left-click (or tap) the suspected thief.</li><li>Hearts give you extra time, but only when you tap them.</li><li>Catch all the thieves before time runs out.</li></ol>
+  <button data-a="gotit">GOT IT</button>
+</section>
+<section id="pause" class="panel"><h2>PAUSED</h2><button data-a="resume">RESUME</button><button data-a="restart">RESTART</button><button data-a="settings">SETTINGS</button><button data-a="home">HOME</button></section>
+<section id="end" class="panel"></section>
+<div id="gift" class="hide"></div>
+<div id="rate" class="hide"></div>
+<div id="dock" class="hide">
+  <button data-a="hist" title="Player history (H)" aria-label="Player history">&#128339;</button>
+  <button data-a="shop" title="Customize and shop (S)" aria-label="Customize and shop">&#128717;&#65039;</button>
+  <button data-a="relaxed" title="Relaxed mode, no timer" aria-label="Relaxed mode">&#127807;</button>
+  <button data-a="settings" title="Settings (O)" aria-label="Settings">&#9881;&#65039;</button>
+  <button data-a="rname" title="Name your carrot rabbit (N)" aria-label="Name your carrot rabbit">&#9999;&#65039;</button>
+  <button data-a="fb" title="Feedback (F)" aria-label="Feedback">&#128221;</button>
+</div>
+<button id="rbBtn" data-a="rbopen" title="Chat with Reboot" aria-label="Chat with Reboot">&#129302;</button>
+<button id="ideaBtn" class="hide" data-a="idea" title="Idea: see the rabbit's next moves" aria-label="Idea">&#128161;<span id="ideaBadge">3</span></button>
+<div id="idea" class="hide"><div class="ic"><button class="ix" data-a="ideaclose" aria-label="Close idea">&#10005;</button><b>&#128161; The rabbit's next moves</b><small id="ideaName"></small><div id="ideaMap"></div><div id="ideaTxt"></div><small id="ideaLeft"></small></div></div>
+<section id="rb" class="hide" role="dialog" aria-label="Reboot chat">
+  <div class="rbh"><span class="rbav">&#129302;</span><div><b>Reboot</b><small>Your Rabbit Hunt helper</small></div><button data-a="rbclose" aria-label="Close chat">&#10005;</button></div>
+  <div id="rbMsgs"></div><div id="rbChips"></div>
+  <div class="rbin"><input id="rbIn" type="text" maxlength="300" placeholder="Ask Reboot anything..." autocomplete="off"><button id="rbSendBtn" data-a="rbsend" aria-label="Send">&#10148;</button></div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+"use strict";
+// ---- safety net: show problems on screen instead of a silent empty page ----
+function banner(msg) {
+  let b = document.getElementById("errbar");
+  if (!b) { b = document.createElement("div"); b.id = "errbar"; b.style.cssText = "position:fixed;left:8px;bottom:8px;right:130px;z-index:99;background:#7a1c1c;color:#fff;font:12px/1.4 system-ui,sans-serif;padding:8px 10px;border-radius:10px;max-height:30vh;overflow:auto"; b.onclick = () => b.remove(); document.body.appendChild(b); }
+  b.textContent = "\u26A0 " + msg + " (tap to hide)";
+}
+function fatal(msg) {
+  const d = document.createElement("div");
+  d.style.cssText = "position:fixed;top:0;right:0;bottom:0;left:0;z-index:100;background:#1d2b34;color:#fff;font:16px/1.5 system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;text-align:center";
+  d.innerHTML = "<div style='font-size:42px'>\u26A0\uFE0F</div><b style='font-size:20px'>Rabbit Hunt can't start the 3D view</b><div style='max-width:460px'></div><button style='padding:12px 22px;border:0;border-radius:12px;background:#f26b1d;color:#fff;font:inherit;font-weight:800'>RELOAD</button>";
+  d.children[2].textContent = msg; d.lastChild.onclick = () => location.reload(); document.body.appendChild(d);
+}
+let softErrs = 0, renderedFrames = 0;
+function softError(e) { console.error(e); if (softErrs++ < 3) banner("Something went wrong: " + ((e && e.message) || e) + ". The game keeps running; if it looks wrong, try Settings > Graphics > LOW."); }
+const guard = f => { try { f(); } catch (e) { softError(e); } };
+window.addEventListener("error", e => { if (e && e.message) softError(e.error || e.message); });
+window.addEventListener("unhandledrejection", e => softError(e.reason));
+if (!window.THREE) { fatal("The 3D game engine could not be loaded. It needs an internet connection, so please check your connection and reload."); return; }
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+
+/* ---------- DATA ---------- */
+const LV = [null,
+  { n: "EASY",      t: 60,  b: 10,  r: 200,   tr: "\u{1F949}", tn: "BRONZE",   N: 1200, sp: 3.2, la: .8,  tf: .45, dc: .12 },
+  { n: "MEDIUM",    t: 70,  b: 20,  r: 500,   tr: "\u{1F948}", tn: "SILVER",   N: 1700, sp: 4.8, la: 1.4, tf: .7,  dc: .25 },
+  { n: "HARD",      t: 80,  b: 30,  r: 1000,  tr: "\u{1F947}", tn: "GOLD",     N: 2300, sp: 6.5, la: 2.1, tf: 1,   dc: .38 },
+  { n: "VERY HARD", t: 90,  b: 40,  r: 5000,  tr: "\u{1F3C6}", tn: "PLATINUM", N: 3000, sp: 8.5, la: 3,   tf: 1.35, dc: .5 },
+  { n: "EXTREME",   t: 100, b: 50, r: 10000, tr: "\u{1F48E}", tn: "DIAMOND",  N: 3600, sp: 10,  la: 3.6, tf: 1.55, dc: .6 }];
+// [id, name, price, swatch]
+const SHOP = {
+  bg: [["meadow","\u2600\uFE0F Sunny Meadow (Level 1)",0,"#87ceeb"],["spring","\u{1F338} Spring",300,"#bfe6ff"],["summer","\u{1F31E} Summer",400,"#4fb6ff"],["autumn","\u{1F342} Autumn (Level 3)",500,"#f2b76a"],["rainy","\u{1F327}\uFE0F Rainy (Level 4)",600,"#7f8fa0"],["snow","\u2744\uFE0F Snow (Level 2)",800,"#d7ecf7"],["sunset","Sunset",700,"#ff9a6b"],["night","Night (Level 5)",900,"#141a3a"]],
+  rabbit: [["white","White",0,"#ffffff"],["brown","Brown",200,"#a0693c"],["gray","Gray",300,"#999999"],["black","Black",500,"#222222"],["blue","Light Blue",400,"#9fd3ff"],["pink","Light Pink",400,"#ffb6d1"],["cream","Cream",250,"#f3e6c4"],["orange","Orange",350,"#f29a3d"],["golden","Golden",450,"#e6b422"],["lavender","Lavender",450,"#c3a6ff"],["mint","Mint",450,"#a8efc9"],["teal","Teal",500,"#3cb8b0"],["red","Red",600,"#d9453d"],["silver","Silver",700,"#d4d4d4"]],
+  scarf: [["red","Red",0,"#e53935"],["blue","Blue",500,"#1e63d6"],["black","Black",300,"#222222"],["green","Green",300,"#2e9e4f"],["purple","Purple",400,"#7b3fc4"],["yellow","Yellow",400,"#f2c300"],["orange","Orange",350,"#f57c00"],["pink","Pink",350,"#ff5fa2"],["teal","Teal",400,"#00a79d"],["white","White",450,"#f5f5f5"],["navy","Navy",450,"#1a2a6c"],["lime","Lime",500,"#8bc34a"],["gold","Gold",800,"#d4af37"]],
+  design: [["plain","Plain",0,"#888"],["striped","Striped",300,"repeating-linear-gradient(90deg,#888 0 6px,#fff 6px 12px)"],["dotted","Dotted",300,"radial-gradient(#fff 25%,#888 30%) 0 0/10px 10px"],["check","Checkered",600,"repeating-conic-gradient(#888 0 25%,#fff 0 50%) 0 0/12px 12px"],["star","Star",500,"repeating-conic-gradient(#888 0 12deg,#fff 0 24deg)"],["lightning","Lightning",700,"repeating-linear-gradient(115deg,#888 0 6px,#ffe14d 6px 9px)"]]
+};
+// theme: [sky, ground, light strength, tree color, sun visible]
+const TH = { meadow: [0x87ceeb, 0x5cb85c, 1, 0x2e8b3a, 1], spring: [0xbfe6ff, 0x8fdc6f, 1.05, 0xf0a6ca, 0], summer: [0x4fb6ff, 0x6fc23a, 1.15, 0x1f8a30, 1], autumn: [0xf2b76a, 0xb9873a, .9, 0xd2691e, 0], rainy: [0x7f8fa0, 0x4f7a55, .6, 0x2f6b3a, 0], snow: [0xd7ecf7, 0xeef4f8, 1, 0xdfeeea, 0], sunset: [0xff9a6b, 0x7a9a4a, .75, 0x2e6b3a, 0], night: [0x141a3a, 0x2b5a38, .4, 0x1f5a2e, 0] };
+// Shop prices run from 5,000 to 12,000 coins, higher for the rarer looks
+const TIER = { bg: { spring: 1, summer: 2, snow: 2, sunset: 3, autumn: 3, rainy: 4, night: 5 }, rabbit: { brown: 1, gray: 1, cream: 1, black: 2, silver: 2, blue: 2, pink: 3, orange: 3, golden: 3, lavender: 4, teal: 4, mint: 4, red: 5 }, scarf: { orange: 1, black: 1, blue: 2, white: 2, navy: 2, green: 3, yellow: 3, pink: 3, purple: 4, teal: 4, lime: 4, gold: 5 }, design: { striped: 2, dotted: 2, check: 3, star: 4, lightning: 5 } };
+Object.entries(SHOP).forEach(([c, list]) => list.forEach(it => { if (it[2]) it[2] = [5000, 6500, 8000, 10000, 12000][(TIER[c][it[0]] || 1) - 1]; }));
+const sw = (cat, id) => SHOP[cat].find(x => x[0] === id)[3];
+
+/* ---------- SAVE ---------- */
+let KEY = "rabbitrun.save.v1";
+let S = { coins: 0, unlocked: 1, hearts: [1, 1, 1], hist: [], qbag: [], diff: "medium", rname: "", tro: {}, owned: {}, eq: { bg: "meadow", rabbit: "white", scarf: "red", design: "plain" }, set: { music: 1, sfx: 1, vib: 1, q: 1 }, best: {}, seen: 0 };
+try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
+if (!(S.coins >= 0)) S.coins = 0; // a brand-new player (or a damaged save) always starts with 0 coins
+if (!Array.isArray(S.hist)) S.hist = [];
+if (!Array.isArray(S.qbag)) S.qbag = [];
+if (!Array.isArray(S.hearts) || S.hearts.length !== 3) S.hearts = [1, 1, 1];
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+
+/* ---------- AUDIO (generated with WebAudio, no files needed) ---------- */
+let AC;
+const ac = () => AC || (AC = new (window.AudioContext || window.webkitAudioContext)());
+function tone(f, d, type, v, w, music) {
+  if (music ? !S.set.music : !S.set.sfx) return;
+  try {
+    const a = ac(), o = a.createOscillator(), g = a.createGain(), t = a.currentTime + (w || 0);
+    o.type = type || "sine"; o.frequency.value = f;
+    g.gain.setValueAtTime(v || .15, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + d);
+  } catch (e) {}
+}
+const seq = (fs, d, type, v, gap) => fs.forEach((f, i) => tone(f, d, type, v, i * gap));
+const SFX = {
+  click: () => tone(520, .06, "square", .08), count: () => tone(440, .15, "sine", .2),
+  go: () => { tone(660, .4, "square", .12); tone(880, .4, "square", .08, .05); },
+  wrong: () => tone(150, .25, "sawtooth", .1), win: () => { seq([523, 659, 784, 1047, 784, 1047, 1319], .22, "triangle", .22, .1); seq([1568, 1319, 1568, 2093], .15, "square", .05, .6); },
+  heart: () => seq([400, 600], .2, "sine", .2, .08), warn: () => tone(900, .07, "square", .07),
+  coin: () => seq([988, 1319], .12, "square", .07, .06), lose: () => seq([392, 370, 330, 262], .4, "triangle", .22, .25)
+};
+const NOTES = [262, 294, 330, 392, 440, 523]; let ni = 0;
+setInterval(() => { if (AC && AC.state === "running") { ni = Math.max(0, Math.min(5, ni + Math.floor(Math.random() * 3) - 1)); tone(NOTES[ni], .2, "triangle", .04, 0, true); } }, 240);
+addEventListener("pointerdown", () => { try { ac().resume(); } catch (e) {} }, { once: true });
+const vib = n => { if (S.set.vib && navigator.vibrate) navigator.vibrate(n); };
+
+/* ---------- 3D WORLD ---------- */
+let R;
+try { R = new THREE.WebGLRenderer({ canvas: $("#c"), antialias: true }); }
+catch (e1) { try { R = new THREE.WebGLRenderer({ canvas: $("#c"), antialias: false, powerPreference: "low-power" }); } catch (e2) { fatal("Your browser could not start 3D graphics (WebGL). Try turning on hardware acceleration, or use Chrome, Safari or Firefox. Details: " + ((e2 && e2.message) || e2)); return; } }
+$("#c").addEventListener("webglcontextlost", e => { e.preventDefault(); banner("The graphics were interrupted (the device may be low on memory). Reload the page, and try Settings > Graphics > LOW."); });
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(50, 1, .1, 300);
+const hemi = new THREE.HemisphereLight(0xffffff, 0x88aa77, .9), sun = new THREE.DirectionalLight(0xffffff, .8);
+sun.position.set(10, 20, 10); scene.add(hemi, sun);
+const lam = c => new THREE.MeshLambertMaterial({ color: c });
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), lam(0x5cb85c));
+ground.rotation.x = -Math.PI / 2; scene.add(ground);
+const leafMat = lam(0x2e8b3a), cloudMat = new THREE.MeshBasicMaterial({ color: 0xffffff }); // recolored by the season theme
+const sunMesh = new THREE.Mesh(new THREE.SphereGeometry(6, 16, 12), new THREE.MeshBasicMaterial({ color: 0xfff1a0 }));
+sunMesh.position.set(-40, 42, -90); scene.add(sunMesh);
+/* ---------- BACKGROUND: sky, sun/moon, clouds and mountains, painted for each season theme ---------- */
+const BG = {
+  meadow: { sky: ["#4aa8f0", "#bfe6ff"], far: "#8fb3c9", near: "#5f9d5b", snow: .5, sun: [620, 100, 34, "#fff3a0"], cloud: "#ffffff", cl: 9 },
+  spring: { sky: ["#8fd0ff", "#ffeef6"], far: "#a9cfae", near: "#78c07f", snow: 0, sun: [900, 104, 30, "#fff6c8"], cloud: "#ffffff", cl: 8 },
+  summer: { sky: ["#1f8fe8", "#a8e0ff"], far: "#6a9f8a", near: "#3f8f4f", snow: 0, sun: [620, 96, 40, "#ffe45e"], cloud: "#ffffff", cl: 7 },
+  autumn: { sky: ["#e8a25a", "#ffe2b0"], far: "#b98a5a", near: "#b3622a", snow: 0, sun: [2200, 108, 32, "#ffe9b8"], cloud: "#fff0e0", cl: 8 },
+  rainy:  { sky: ["#5d6d7e", "#a3b3c2"], far: "#667a8a", near: "#4a5d6a", snow: 0, cloud: "#6f7d8b", cl: 24, big: 1.5 },
+  snow:   { sky: ["#bfdcee", "#f2f8fc"], far: "#dfeaf3", near: "#c3d6e6", snow: 1, sun: [1400, 104, 26, "#ffffff"], cloud: "#ffffff", cl: 9 },
+  sunset: { sky: ["#5a4a8a", "#ffb07a"], far: "#7a4a7a", near: "#4a3560", snow: 0, sun: [1500, 176, 56, "#ffcf8a"], cloud: "#ffb79a", cl: 8 },
+  night:  { sky: ["#070b24", "#1d2c5e"], far: "#26335a", near: "#161f3c", snow: 0, sun: [2300, 104, 24, "#eef2ff"], stars: 1, cloud: "#33406b", cl: 6 }
+};
+const bdCanvas = document.createElement("canvas"); bdCanvas.width = 3072; bdCanvas.height = 256;
+const bdTex = new THREE.CanvasTexture(bdCanvas);
+const backdrop = new THREE.Mesh(new THREE.PlaneGeometry(160, 10), new THREE.MeshBasicMaterial({ map: bdTex, fog: false }));
+backdrop.position.set(0, 5, -21); scene.add(backdrop); // a painted wall just behind the crowd: it fills the top of the screen
+function drawBackdrop() {
+  const b = BG[themeNow()] || BG.meadow, c = bdCanvas.getContext("2d"), W = 3072, H = 256;
+  let seed = 11; const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647;
+  const g = c.createLinearGradient(0, 0, 0, 200); g.addColorStop(0, b.sky[0]); g.addColorStop(1, b.sky[1]);
+  c.fillStyle = g; c.fillRect(0, 0, W, H); scene.background = new THREE.Color(b.sky[0]);
+  if (b.stars) { c.fillStyle = "#fff"; for (let i = 0; i < 260; i++) { c.globalAlpha = .4 + rnd() * .6; c.fillRect(rnd() * W, 60 + rnd() * 120, 2, 2); } c.globalAlpha = 1; }
+  if (b.sun) {
+    const [x, y, r, col] = b.sun, rg = c.createRadialGradient(x, y, r * .5, x, y, r * 3); rg.addColorStop(0, col); rg.addColorStop(1, "rgba(255,255,255,0)");
+    c.globalAlpha = .55; c.fillStyle = rg; c.fillRect(x - r * 3, y - r * 3, r * 6, r * 6); c.globalAlpha = 1;
+    c.fillStyle = col; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill();
+  }
+  const sc = b.big || 1;
+  for (let i = 0; i < b.cl; i++) { // clouds: thick and grey in the rain, warm at sunset, pale blue-grey at night
+    const x = rnd() * W, y = 84 + rnd() * 52, s = (.8 + rnd() * .9) * sc; c.fillStyle = b.cloud; c.globalAlpha = .92;
+    [[-2, 4], [-1, -6], [0, -10], [1, -6], [2, 4]].forEach(([dx, dy]) => { c.beginPath(); c.ellipse(x + dx * 30 * s, y + dy * s, 40 * s, 20 * s, 0, 0, 7); c.fill(); });
+  }
+  c.globalAlpha = 1;
+  const range = (base, amp, col, f1, f2, snowY) => { // a mountain range with sharp peaks, optional snow caps
+    const p1 = rnd() * 6, p2 = rnd() * 6; c.beginPath(); c.moveTo(0, H);
+    for (let x = 0; x <= W; x += 8) { const h = (1 - Math.abs(Math.sin(x * f1 + p1))) * .65 + (1 - Math.abs(Math.sin(x * f2 + p2))) * .35; c.lineTo(x, base - amp * h); }
+    c.lineTo(W, H); c.closePath(); c.fillStyle = col; c.fill();
+    if (snowY) {
+      c.save(); c.clip(); c.fillStyle = "#fff"; c.globalAlpha = .92; c.beginPath(); c.moveTo(0, 0);
+      for (let x = 0; x <= W; x += 20) c.lineTo(x, snowY + (rnd() - .5) * 12);
+      c.lineTo(W, 0); c.closePath(); c.fill(); c.restore();
+    }
+  };
+  range(190, 46, b.far, .0031, .0083, b.snow ? 190 - 46 * .6 : 0);
+  range(220, 26, b.near, .0057, .0149, b.snow > .9 ? 220 - 26 * .55 : 0);
+  bdTex.needsUpdate = true;
+}
+for (let i = 0; i < 28; i++) { // trees behind the crowd
+  const g = new THREE.Group(), t = new THREE.Mesh(new THREE.CylinderGeometry(.3, .4, 2, 6), lam(0x7a5230)), l = new THREE.Mesh(new THREE.ConeGeometry(1.6, 4, 7), leafMat);
+  t.position.y = 1; l.position.y = 4; g.add(t, l); g.position.set((Math.random() - .5) * 120, 0, -19.4 - Math.random() * .8); g.scale.setScalar(.3 + Math.random() * .15); scene.add(g);
+}
+for (let i = 0; i < 7; i++) { // clouds
+  const g = new THREE.Group(); for (let j = 0; j < 3; j++) { const s = new THREE.Mesh(new THREE.SphereGeometry(4 + j, 8, 6), cloudMat); s.position.set(j * 5, j % 2, 0); g.add(s); }
+  g.position.set((Math.random() - .5) * 140, 30 + Math.random() * 10, -70); scene.add(g);
+}
+
+// A cuter, more realistic rabbit: body, haunches, head with eyes + nose, long ears (pink inside), fluffy tail.
+// The legs are separate pieces (front paws, hind legs with big feet) so they swing while the rabbit runs.
+const C_W = [1, 1, 1], C_PINK = [1, .72, .78], C_EYE = [.06, .05, .05], C_NOSE = [1, .45, .55];
+function sphPart(list, c, x, y, z, sx, sy, sz, rz, seg) {
+  const g = new THREE.SphereGeometry(1, seg ? seg[0] : 7, seg ? seg[1] : 5);
+  g.applyMatrix4(new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, rz || 0)), new THREE.Vector3(sx, sy, sz)));
+  list.push([g, c]);
+}
+function mergeParts(list) {
+  const p = [], n = [], col = [], ix = []; let o = 0;
+  for (const [g, c] of list) {
+    p.push(...g.attributes.position.array); n.push(...g.attributes.normal.array);
+    for (let i = 0; i < g.attributes.position.count; i++) col.push(c[0], c[1], c[2]);
+    for (const i of g.index.array) ix.push(i + o); o += g.attributes.position.count;
+  }
+  const G = new THREE.BufferGeometry();
+  G.setAttribute("position", new THREE.Float32BufferAttribute(p, 3)); G.setAttribute("normal", new THREE.Float32BufferAttribute(n, 3)); G.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+  G.setIndex(ix); G.computeBoundingSphere(); return G;
+}
+const PIV_F = [.3, .3, 0], PIV_H = [-.2, .35, 0]; // shoulder and hip: the legs swing around these points
+function rabbitGeos() {
+  const b = [], f = [], h = [], lo = [4, 3];
+  sphPart(b, C_W, 0, .42, 0, .5, .34, .3);
+  sphPart(b, C_W, -.2, .4, .22, .3, .3, .14); sphPart(b, C_W, -.2, .4, -.22, .3, .3, .14); // haunches
+  sphPart(b, C_W, .52, .7, 0, .24, .21, .19);                                              // head
+  sphPart(b, C_W, .7, .64, 0, .12, .1, .1, 0, [6, 4]);                                     // snout
+  sphPart(b, C_NOSE, .8, .65, 0, .035, .035, .035, 0, lo);
+  sphPart(b, C_EYE, .6, .76, .15, .04, .04, .04, 0, lo); sphPart(b, C_EYE, .6, .76, -.15, .04, .04, .04, 0, lo);
+  for (const z of [.08, -.08]) { sphPart(b, C_W, .42, 1.12, z, .065, .3, .045, .22, [5, 4]); sphPart(b, C_PINK, .455, 1.12, z, .035, .24, .05, .22, [5, 4]); } // ears
+  sphPart(b, C_W, -.52, .46, 0, .13, .13, .13, 0, [5, 4]);                                 // fluffy tail
+  for (const z of [.12, -.12]) { sphPart(f, C_W, 0, -.15, z, .05, .15, .05, 0, [5, 3]); sphPart(f, C_W, .05, -.29, z, .1, .04, .05, 0, [5, 3]); }  // front legs + paws
+  for (const z of [.2, -.2]) { sphPart(h, C_W, 0, -.15, z, .06, .17, .07, 0, [5, 3]); sphPart(h, C_W, .1, -.31, z, .2, .04, .07, 0, [5, 3]); }      // hind legs + long feet
+  return [mergeParts(b), mergeParts(f), mergeParts(h)];
+}
+const [GEO, GEO_F, GEO_H] = rabbitGeos(), WHITE = new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: true }), D = new THREE.Object3D();
+const LM = new THREE.Matrix4(), RZ = new THREE.Matrix4(), TF = new THREE.Matrix4().makeTranslation(...PIV_F), THH = new THREE.Matrix4().makeTranslation(...PIV_H);
+const SHADOW_GEO = new THREE.CircleGeometry(.5, 10).rotateX(-Math.PI / 2), SHADOW_MAT = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .28, depthWrite: false }), SM_ = new THREE.Object3D();
+const ZMIN = -14, ZMAX = 6;
+const kFit = () => Math.max(1, 1.6 / cam.aspect);
+// Half-width of the visible ground at depth z (+ margin): rabbits fill the screen edge to edge on any window shape
+const halfW = z => .3297 * (48 * kFit() - z) * cam.aspect + 8;
+let crowd, crowdF, crowdH, crowdS, rab = [];
+
+function buildCrowd(n, L) {
+  n = Math.min(4200, Math.round(n * halfW(-4) / 24 * [.6, 1, 1][S.set.q])); // wider screens get more rabbits so the crowd stays dense
+  [crowd, crowdF, crowdH, crowdS].forEach(m => m && scene.remove(m));
+  crowd = new THREE.InstancedMesh(GEO, WHITE, n); crowdF = new THREE.InstancedMesh(GEO_F, WHITE, n); crowdH = new THREE.InstancedMesh(GEO_H, WHITE, n); crowdS = new THREE.InstancedMesh(SHADOW_GEO, SHADOW_MAT, n);
+  [crowd, crowdF, crowdH, crowdS].forEach(m => m.frustumCulled = false); rab = [];
+  const c = new THREE.Color();
+  for (let i = 0; i < n; i++) {
+    const z = ZMIN + Math.random() * (ZMAX - ZMIN), dc = Math.random() < L.dc; rab.push({ u: ((i + Math.random()) / n) * 2 - 1, x: 0, z, esc: i < 50, escOf: Math.floor(i / 10), ox: 0, oz: 0, ot: 0, sp: L.sp * (.8 + Math.random() * .5), ph: Math.random() * 6.28, sc: .85 + Math.random() * .3, lf: (.3 + Math.random() * .6) * (dc ? 3 : 1), lp: Math.random() * 6.28, dc });
+    const v = .93 + Math.random() * .07; c.setRGB(v, v, v); crowd.setColorAt(i, c); crowdF.setColorAt(i, c); crowdH.setColorAt(i, c); // normal rabbits stay white
+  }
+  [crowd, crowdF, crowdH].forEach(m => { m.instanceColor.needsUpdate = true; scene.add(m); }); scene.add(crowdS);
+}
+
+// The carrot thieves: same rabbit + scarf + carrot. Level N has N of them, each with its own colors and its own run pattern.
+function makeThief(id) {
+  const g = new THREE.Group(), mat = new THREE.MeshLambertMaterial({ vertexColors: true }), body = new THREE.Mesh(GEO, mat), legF = new THREE.Mesh(GEO_F, mat), legH = new THREE.Mesh(GEO_H, mat), scarfMat = new THREE.MeshLambertMaterial({ side: THREE.DoubleSide });
+  const ring = new THREE.Mesh(new THREE.CylinderGeometry(.235, .205, .26, 16, 1, true), scarfMat); ring.position.set(.47, .6, 0); ring.rotation.z = Math.PI / 2; // scarf band wrapped round the lower face and neck
+  const knot = new THREE.Mesh(new THREE.SphereGeometry(.075, 8, 6), scarfMat); knot.position.set(.4, .56, .2);
+  const tail = new THREE.Mesh(new THREE.PlaneGeometry(.6, .14, 6, 1).translate(-.3, 0, 0), scarfMat); tail.position.set(.4, .56, .2);   // long scarf end, pivots at the knot
+  const tail2 = new THREE.Mesh(new THREE.PlaneGeometry(.4, .12, 4, 1).translate(-.2, 0, 0), scarfMat); tail2.position.set(.4, .55, .21); // shorter end
+  const car = new THREE.Mesh(new THREE.ConeGeometry(.08, .55, 6), lam(0xff7a00)); car.rotation.z = -Math.PI / 2 - .2; car.position.set(1.01, .505, 0);
+  const leaf = new THREE.Mesh(new THREE.SphereGeometry(.07, 6, 4), lam(0x2e9e4f)); leaf.position.set(.76, .57, .09); // green top peeking out at the side of the mouth
+  legF.position.set(...PIV_F); legH.position.set(...PIV_H);
+  [body, legF, legH, ring, knot, tail, tail2, car, leaf].forEach(m => { m.userData.thief = 1; m.userData.tid = id; g.add(m); }); scene.add(g);
+  const shadow = new THREE.Mesh(SHADOW_GEO, SHADOW_MAT); shadow.visible = false; scene.add(shadow);
+  const glow = new THREE.Mesh(new THREE.RingGeometry(.8, 1.1, 28), new THREE.MeshBasicMaterial({ color: 0xffe14d, side: THREE.DoubleSide }));
+  glow.rotation.x = -Math.PI / 2; glow.visible = false; scene.add(glow);
+  return { id, g, mat, body, legF, legH, scarfMat, ring, knot, tail, tail2, car, leaf, shadow, glow, pat: null, caught: false, celeb: 0, look: null,
+    th: { u: 0, sp: 3, z: -4, zt: -4, zt_t: 0, zk: 3, shift: 0, t: 0, sm: 1, hp: 0, style: "cruise", tgt: 50, idx: 0, flip: 1, jp: -1, jt: 1, jd: 0 } };
+}
+const thieves = [makeThief(0)];
+// The older single-rabbit code works on the "current" thief; useThief(T) points all of these at thief T.
+let thief, tMat, tBody, legFt, legHt, scarfMat, ring, knot, tail, tail2, car, leaf, tShadow, glow, th, pat;
+let need = 1, caughtN = 0, lastCaught = null, ideaIdx = 0, ideaWho = "";
+function useThief(T) { ({ g: thief, mat: tMat, body: tBody, legF: legFt, legH: legHt, scarfMat, ring, knot, tail, tail2, car, leaf, shadow: tShadow, glow, th, pat } = T); }
+useThief(thieves[0]);
+function flutter(lp) { // scarf ends wave in the wind and the legs swing
+  const now = performance.now();
+  tail.rotation.z = -.45 + Math.sin(now / 70) * .22; tail.rotation.y = Math.sin(now / 110) * .3;
+  tail2.rotation.z = -.15 + Math.sin(now / 85 + 1) * .25; tail2.rotation.y = Math.sin(now / 95 + 2) * .35;
+  legFt.rotation.z = Math.sin(2 * lp) * .7; legHt.rotation.z = -Math.sin(2 * lp + .6) * .9;
+}
+
+const scarfCache = {};
+function scarfTex(col, des) { const k = col + des; return scarfCache[k] || (scarfCache[k] = makeScarfTex(col, des)); }
+function makeScarfTex(col, des) {
+  const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d");
+  x.fillStyle = col; x.fillRect(0, 0, 64, 64); x.fillStyle = "rgba(255,255,255,.85)";
+  if (des === "striped") for (let i = 0; i < 64; i += 16) x.fillRect(i, 0, 8, 64);
+  if (des === "dotted") for (let i = 8; i < 64; i += 16) for (let j = 8; j < 64; j += 16) { x.beginPath(); x.arc(i, j, 4, 0, 7); x.fill(); }
+  if (des === "check") for (let i = 0; i < 64; i += 16) for (let j = 0; j < 64; j += 16) if ((i + j) / 16 % 2 === 0) x.fillRect(i, j, 16, 16);
+  if (des === "star") for (const [cx, cy] of [[16, 16], [48, 16], [16, 48], [48, 48]]) {
+    x.beginPath(); for (let k = 0; k < 10; k++) { const r = k % 2 ? 4 : 9, an = -Math.PI / 2 + k * Math.PI / 5; x[k ? "lineTo" : "moveTo"](cx + Math.cos(an) * r, cy + Math.sin(an) * r); } x.closePath(); x.fill();
+  }
+  if (des === "lightning") { x.fillStyle = "#ffe14d"; x.beginPath(); x.moveTo(36, 4); x.lineTo(20, 34); x.lineTo(32, 34); x.lineTo(26, 60); x.lineTo(46, 26); x.lineTo(34, 26); x.closePath(); x.fill(); }
+  return new THREE.CanvasTexture(c);
+}
+let curTheme = null; const themeNow = () => curTheme || S.eq.bg;
+function look() { // apply the equipped customization
+  tBody.material.color.set(sw("rabbit", S.eq.rabbit));
+  scarfMat.map = scarfTex(sw("scarf", S.eq.scarf), S.eq.design); scarfMat.needsUpdate = true;
+  const t = TH[themeNow()]; scene.background = new THREE.Color(t[0]); ground.material.color.setHex(t[1]); hemi.intensity = .9 * t[2]; sun.intensity = .8 * t[2];
+  scene.fog = themeNow() === "rainy" ? new THREE.Fog(0x7f8fa0, 70, 170) : null;
+  leafMat.color.setHex(t[3]); cloudMat.color.setHex(themeNow() === "rainy" ? 0x8a96a3 : 0xffffff); sunMesh.visible = !!t[4]; pedMat.color.setHex(t[1]); weather(); drawBackdrop();
+}
+function size() {
+  R.setPixelRatio(Math.min(devicePixelRatio, [1, 1.5, 2][S.set.q])); R.setSize(innerWidth, innerHeight);
+  cam.aspect = innerWidth / innerHeight; cam.updateProjectionMatrix();
+}
+addEventListener("resize", size);
+
+/* ---------- GAME STATE ---------- */
+let st = "menu", mode = "timed", lvl = 1, L = LV[1], rem = 0, used = [0, 0, 0], cd = 0, cdN = 4, gt = 0, ts = 1, winT = 0, wrong = -1, wrongT = 0, warnS = -1, focus = false, won = false, pst = "play", backTo = "menu", pending = false, cat = "rabbit", rated = false, rating = "NICE!", playT = 0, wrongs = 0;
+function rabEye(open) { return open ? '<svg class="rabeye" data-open="1" viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><g transform="rotate(-9 15 16)"><ellipse cx="15" cy="10" rx="4.6" ry="10" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.5"/><ellipse cx="15" cy="11.5" rx="2.3" ry="6.8" fill="#ffc4d2"/></g><g transform="rotate(9 33 16)"><ellipse cx="33" cy="10" rx="4.6" ry="10" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.5"/><ellipse cx="33" cy="11.5" rx="2.3" ry="6.8" fill="#ffc4d2"/></g><ellipse cx="24" cy="30" rx="18" ry="15.5" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.6"/><circle cx="12" cy="35" r="3.2" fill="#ffb3c6" opacity=".65"/><circle cx="36" cy="35" r="3.2" fill="#ffb3c6" opacity=".65"/><path d="M22 33.2h4l-2 2.4z" fill="#f48aa5"/><path d="M20.4 37.2q1.8 2.2 3.6.2q1.8 2 3.6-.2" fill="none" stroke="#c9a98a" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="16.5" cy="28" rx="3.3" ry="4" fill="#2b2430"/><circle cx="15.4" cy="26.4" r="1.4" fill="#fff"/><circle cx="17.7" cy="29.6" r=".8" fill="#fff"/><ellipse cx="31.5" cy="28" rx="3.3" ry="4" fill="#2b2430"/><circle cx="30.4" cy="26.4" r="1.4" fill="#fff"/><circle cx="32.7" cy="29.6" r=".8" fill="#fff"/></svg>' : '<svg class="rabeye" data-open="0" viewBox="0 0 48 48" width="40" height="40" aria-hidden="true"><g transform="rotate(-9 15 16)"><ellipse cx="15" cy="10" rx="4.6" ry="10" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.5"/><ellipse cx="15" cy="11.5" rx="2.3" ry="6.8" fill="#ffc4d2"/></g><g transform="rotate(9 33 16)"><ellipse cx="33" cy="10" rx="4.6" ry="10" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.5"/><ellipse cx="33" cy="11.5" rx="2.3" ry="6.8" fill="#ffc4d2"/></g><ellipse cx="24" cy="30" rx="18" ry="15.5" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.6"/><circle cx="12" cy="35" r="3.2" fill="#ffb3c6" opacity=".65"/><circle cx="36" cy="35" r="3.2" fill="#ffb3c6" opacity=".65"/><path d="M22 33.2h4l-2 2.4z" fill="#f48aa5"/><path d="M20.4 37.2q1.8 2.2 3.6.2q1.8 2 3.6-.2" fill="none" stroke="#c9a98a" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="15.0" cy="36.5" rx="3.6" ry="4.4" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.4"/><ellipse cx="16.5" cy="27.6" rx="6.2" ry="5.8" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.5"/><path d="M14.4 22.9v3.1M16.5 22.3v3.7M18.6 22.9v3.1" stroke="#c9a98a" stroke-width="1.1" stroke-linecap="round"/><ellipse cx="16.5" cy="30" rx="2.4" ry="1.9" fill="#ffc4d2"/><ellipse cx="33.0" cy="36.5" rx="3.6" ry="4.4" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.4"/><ellipse cx="31.5" cy="27.6" rx="6.2" ry="5.8" fill="#fffaf3" stroke="#c9a98a" stroke-width="1.5"/><path d="M29.4 22.9v3.1M31.5 22.3v3.7M33.6 22.9v3.1" stroke="#c9a98a" stroke-width="1.1" stroke-linecap="round"/><ellipse cx="31.5" cy="30" rx="2.4" ry="1.9" fill="#ffc4d2"/></svg>'; } // one rabbit icon: paws over its eyes = password hidden, eyes open = password visible
+const show = id => {
+  $$(".panel").forEach(p => p.classList.toggle("on", p.id === id));
+  $("#c").style.cursor = ""; /* always the same black cursor (style sheet), also over the correct rabbit */ if (id) $("#vig").classList.remove("on");
+  $("#ideaBtn").classList.toggle("hide", !me || id === "auth" || id === "admin");
+  $("#dock").classList.toggle("hide", !(st === "menu" && me && ["menu", "hist", "shop", "settings", "name", "fb"].includes(id))); // icons: home page and its pages only
+  try { setPreview(id === "shop" || id === "name"); } catch (e) {} // the running rabbit shows only on the shop and name screens, never behind another screen
+};
+function big(t) {
+  const b = $("#big"); b.textContent = t; b.style.fontSize = t.length > 4 ? "min(11vw,90px)" : "";
+  b.style.animation = "none"; b.offsetWidth; b.style.animation = "";
+}
+function fx(t, x, y, cls) {
+  const d = document.createElement("div"); d.className = "fx " + (cls || ""); d.textContent = t; d.style.left = x + "px"; d.style.top = y + "px";
+  document.body.appendChild(d); setTimeout(() => d.remove(), 900);
+}
+function countTo(el, a, b) {
+  const t0 = performance.now();
+  (function f(n) { const k = Math.min(1, (n - t0) / 900); el.textContent = Math.round(a + (b - a) * k); if (k < 1) requestAnimationFrame(f); })(t0);
+}
+const stats = () => { $("#stats").innerHTML = (me ? "\u{1F464} " + esc(accounts[me] ? accounts[me].name : me) + " &middot; " : "") + "\u{1FA99} " + S.coins + " &middot; " + [1, 2, 3, 4, 5].map(i => `<span class="mini${S.tro[i] ? "" : " off"}">${medal(i, 26)}</span>`).join("") + " &middot; Level " + S.unlocked + " unlocked &middot; " + diff.toUpperCase() + " mode &middot; " + heartRow(S.hearts); };
+function renderTime() {
+  $("#time").textContent = Math.ceil(rem); $("#timeP").classList.toggle("warn", rem <= 10);
+  const bar = $("#tbar i"); bar.style.width = Math.max(0, Math.min(1, rem / Math.max(L.t, rem))) * 100 + "%"; bar.style.background = rem <= 10 ? "#e53935" : rem <= 20 ? "#ffa000" : "#4cd964";
+  $("#vig").classList.toggle("on", mode === "timed" && st === "play" && rem > 0 && rem <= 10); // red glow around the screen in the last 10 seconds
+}
+function renderHud() {
+  $("#hud").classList.remove("hide"); $("#coins").textContent = S.coins; renderCap();
+  $("#hearts").innerHTML = S.hearts.map((h, i) => `<button data-h="${i}" ${h ? "" : "disabled"}>${h ? "\u2764\uFE0F" : "\u{1F494}"}</button>`).join("");
+  const t = mode === "timed"; $("#hearts").style.display = $("#timeP").style.display = $("#tbar").style.display = t ? "" : "none"; renderTime();
+}
+
+function start(l, m) {
+  setPreview(false); lvl = l; L = tuned(l); mode = m; need = m === "relaxed" ? 1 : l; caughtN = 0; lastCaught = null;
+  curTheme = S.eq.bg !== "meadow" ? S.eq.bg : PACK[l].theme; look(); // every level has its own theme (a theme you bought wins)
+  buildCrowd(L.N, L);
+  bubbles.forEach(b => b.el.remove()); bubbles.length = 0;
+  while (thieves.length < need) thieves.push(makeThief(thieves.length));
+  thieves.forEach((T, k) => {
+    if (k < need) { T.pat = makePattern(nextPatternId()); Object.assign(T.th, { idx: 0, u: T.pat.u0, sp: L.sp, z: T.pat.z0, zt: T.pat.z0, zt_t: 0, zk: 3, shift: 0, t: 0, sm: 1, hp: 0, style: "cruise", tgt: 50, flip: 1, jp: -1, jt: 1, jd: 0 }); }
+    T.caught = false; T.celeb = 0; T.g.visible = T.shadow.visible = k < need; T.glow.visible = false;
+  });
+  dressThieves(); useThief(thieves[0]);
+  used = [0, 0, 0]; rem = L.t; cd = 0; cdN = 4; playT = 0; wrongs = 0; rated = false; focus = false; won = false;
+  st = "count"; wrong = -1; warnS = -1; big(""); show(""); renderHud();
+  $("#sub").textContent = (m === "relaxed" ? "Relaxed mode" : "Level " + l + " \u00B7 " + L.n) + " \u00B7 Catch " + need + " rabbit" + (need > 1 ? "s" : ""); $("#sub").classList.add("on"); setTimeout(() => $("#sub").classList.remove("on"), 3400);
+}
+function home() { st = "menu"; focus = false; won = false; curTheme = null; setPreview(false); thieves.forEach(T => { T.g.visible = T.shadow.visible = T.glow.visible = false; }); look(); $("#hud").classList.add("hide"); big(""); stats(); show("menu"); }
+function pause() { if (st === "play" || st === "count") { pst = st; st = "paused"; show("pause"); } }
+function heart(i) {
+  if (st !== "play" || mode !== "timed" || !S.hearts[i]) return;
+  S.hearts[i] = 0; used[i] = 1; save(); rem += L.b; SFX.heart(); fx("+" + L.b + " SEC", innerWidth - 90, 120, "g"); renderHud();
+}
+function rate() { // performance = how fast you were, penalised for wrong clicks and hearts used
+  const p = playT / (mode === "timed" ? L.t : 60) + wrongs * .1 + used.reduce((a, b) => a + b, 0) * .15;
+  return p <= .4 ? "GREAT!" : p <= .8 ? "GOOD!" : "NICE!";
+}
+function caught() { st = "win"; focus = true; won = true; winT = 0; rated = false; rating = rate(); SFX.win(); vib([40, 40, 80]); big("WIN!"); confetti(); }
+let snap = null; // run state at the moment time ran out, so USE HEART can carry on
+function freshRun() { S.unlocked = 1; S.hearts = [1, 1, 1]; S.buys = 0; save(); } // new run: Level 1 and 3 whole hearts
+function lose() {
+  SFX.lose(); vib(200); react("laugh", "thief");
+  if (mode === "timed") { snap = { unl: S.unlocked, hearts: S.hearts.slice(), buys: S.buys || 0 }; rec(false); freshRun(); } // leaving or closing now = fresh start
+  endScreen(false);
+}
+
+function rec(win) { // permanent playing history (kept in the browser's storage)
+  S.hist.push({ t: Date.now(), lvl, mode, win, clicks: wrongs + caughtN, ok: caughtN, sec: Math.round(playT), rating: win ? rating : "", dm: diff });
+  if (S.hist.length > 100) S.hist.shift(); touchDay(); save(); syncUser();
+}
+function profile(hist) { // accuracy = correct catches out of all clicks; nickname from accuracy, win rate and how many GREAT catches
+  const h = hist || S.hist, g = h.length, w = h.filter(e => e.win).length, cl = h.reduce((a, e) => a + e.clicks, 0), great = h.filter(e => e.rating === "GREAT!").length;
+  const acc = cl ? Math.round(100 * h.reduce((a, e) => a + (e.ok || 0), 0) / cl) : 0, score = acc * .5 + (g ? 100 * w / g : 0) * .3 + (w ? 100 * great / w : 0) * .2;
+  const nick = g < 3 ? "Fresh Rookie" : score >= 90 ? "Eagle Eye Legend" : score >= 75 ? "Carrot Detective" : score >= 55 ? "Sharp Hopper" : score >= 35 ? "Curious Bunny" : "Sleepy Sniffer";
+  const lvlName = !cl ? "Not rated yet" : acc >= 90 ? "Master" : acc >= 75 ? "Expert" : acc >= 55 ? "Skilled" : acc >= 35 ? "Learner" : "Beginner";
+  return { g, w, acc, nick, lvlName };
+}
+// Gift-box quotes: all original (written for this game), so nothing is copied from any website
+const QUOTES = [
+  "Every small step you take is a seed; keep walking, and the garden will follow.",
+  "Joy is not waiting at the finish line. It is hiding in the way you run.",
+  "Even the quietest morning is a promise that you may begin again.",
+  "You are allowed to grow slowly, as long as you never stop growing.",
+  "A brave heart does not feel no fear; it simply keeps hopping forward.",
+  "Let your smile be the sunrise that someone else was waiting for.",
+  "What you notice, you grow. Look for the good and watch it bloom.",
+  "Mistakes are only the pencil marks of a masterpiece still being drawn.",
+  "The sky was never your limit; it is only the beginning of your view.",
+  "Be patient with yourself. Even the moon takes time to become full.",
+  "Hope is a lantern you can carry even when the road is dark.",
+  "Happiness grows where gratitude has watered the soil.",
+  "Today's effort is tomorrow's strength, quietly waiting to surprise you.",
+  "The best way through a hard day is one gentle breath at a time.",
+  "You do not need to be perfect to be wonderful.",
+  "Every finish line was once just someone's first step.",
+  "Kindness is a light that never runs out, no matter how many candles it lights.",
+  "When the path bends, the view changes. Trust the turn.",
+  "Dream with your eyes open, then walk toward it with your feet.",
+  "A cloudy day is only the sun taking a breath before it shines again.",
+  "Your story is still being written, and the next page is yours to fill with light.",
+  "Little by little, the river carves the mountain. Patience is a quiet power.",
+  "Smile at the day, and the day will often smile back.",
+  "Strength is not the absence of tears; it is rising with them still on your face.",
+  "Plant one good thought each morning and watch your whole day blossom.",
+  "The finest treasures are found by those who keep looking.",
+  "Rest if you must, but never forget how high you can climb.",
+  "Happiness is a habit. Practice noticing the beautiful.",
+  "Each sunrise hands you a blank page. Write something kind.",
+  "Believe in the part of you that keeps trying, even when no one is watching.",
+  "A heart that gives light to others is never in the dark.",
+  "Be like the rabbit: when the road is long, hop with joy and trust your feet.",
+  "Your calm is a superpower. Carry it into every storm.",
+  "Wonder is the doorway to joy. Stay curious and the world keeps opening.",
+  "Progress is quiet. Trust it even when you cannot hear it growing.",
+  "Choose the thought that lifts you; you are the gardener of your own mind.",
+  "Even a tiny flame can turn a whole night into a place of hope.",
+  "Yesterday taught you something. Today is the gift of using it.",
+  "You are not behind; you are simply on your own beautiful path.",
+  "Laugh often. It is the music that makes hard days easier to carry.",
+  "Light does not argue with the dark; it simply shines, and the dark makes room.",
+  "Success is made of ordinary days done with an extraordinary heart.",
+  "Say yes to the small joys. They are the stars of everyday life.",
+  "Every challenge is polishing a part of you that was meant to shine.",
+  "Slow down enough to hear your own happiness. It speaks softly.",
+  "A grateful heart finds a feast in even the simplest day.",
+  "Keep going. The sun never rushes, yet it rises every single day.",
+  "You are enough today, and you are becoming even more tomorrow.",
+  "Courage grows when you begin the thing you were afraid to start.",
+  "Be a reason someone believes in goodness today."
+];
+let curQ = "";
+function nextQuote() { // never repeats until every quote has been seen; the shuffled bag is saved, so it also holds across visits
+  S.qbag = S.qbag.filter(i => i < QUOTES.length);
+  if (!S.qbag.length) {
+    S.qbag = QUOTES.map((_, i) => i);
+    for (let i = S.qbag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [S.qbag[i], S.qbag[j]] = [S.qbag[j], S.qbag[i]]; }
+    if (S.qbag[S.qbag.length - 1] === S.lastQ) S.qbag.unshift(S.qbag.pop()); // not the same one twice in a row after a refill
+  }
+  S.lastQ = S.qbag.pop(); save(); return QUOTES[S.lastQ];
+}
+const GIFT = `<div id="giftWrap"><button class="giftb" data-a="gift"><span>\u{1F381}</span>TAP YOUR GIFT BOX</button></div>`;
+SFX.gift = () => seq([784, 988, 1175, 1568], .3, "triangle", .18, .09);
+function openGift() {
+  const g = $("#gift"); if (!g.classList.contains("hide")) return;
+  curQ = nextQuote(); g.classList.remove("hide"); g.innerHTML = `<div class="gbox">\u{1F381}</div>`; SFX.coin(); vib(30);
+  setTimeout(() => { SFX.gift(); g.innerHTML = `<div class="gq"><div class="gicon">\u{1F381}\u2728</div><p>\u201C${curQ}\u201D</p><small>A little light for your day</small><button data-a="giftclose">THANK YOU!</button></div>`; }, 900);
+}
+// [rim light, rim dark, face light, face dark, ribbon]
+const MEDALS = {
+  1: ["#f2c19b", "#8c5a2b", "#e0a57a", "#a86a35", "#2e9e4f"],
+  2: ["#f4f6f9", "#8d97a6", "#e3e8ee", "#a9b3c1", "#2f6fd6"],
+  3: ["#ffe27a", "#b8860b", "#ffd24d", "#e0a312", "#d63a3a"],
+  4: ["#eef6ff", "#5f7a99", "#d7e6f5", "#8fa8c2", "#1a8f8f"],
+  5: ["#b9f3ff", "#2a8fd1", "#8fe3ff", "#3aa5e6", "#7b3fc4"]
+};
+const medal = (() => {
+  let uid = 0;
+  return (i, size) => {
+    const c = MEDALS[i], k = "md" + (++uid);
+    const mark = i === 5
+      ? `<polygon points="37,72 43,64 57,64 63,72 50,92" fill="url(#${k}g)" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M37 72H63M43 64L47 72L50 64L53 72L57 64M47 72L50 92L53 72" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="1"/>`
+      : `<text x="50" y="91" text-anchor="middle" font-family="system-ui,sans-serif" font-size="32" font-weight="900" fill="#fff" stroke="rgba(0,0,0,.35)" stroke-width="1.2" paint-order="stroke">${i}</text>`;
+    return `<svg class="medal" viewBox="0 0 100 124" width="${size}" height="${Math.round(size * 1.24)}" role="img" aria-label="${["", "Bronze", "Silver", "Gold", "Platinum", "Diamond"][i]} medal"><defs>` +
+      `<linearGradient id="${k}r" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient>` +
+      `<linearGradient id="${k}f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c[2]}"/><stop offset="1" stop-color="${c[3]}"/></linearGradient>` +
+      `<linearGradient id="${k}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#4fc3f7"/></linearGradient></defs>` +
+      `<polygon points="26,0 47,0 60,50 38,50" fill="${c[4]}"/><polygon points="74,0 53,0 40,50 62,50" fill="${c[4]}" opacity=".8"/>` +
+      `<circle cx="50" cy="80" r="36" fill="url(#${k}r)"/><circle cx="50" cy="80" r="32.5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="2" stroke-dasharray="2 4"/>` +
+      `<circle cx="50" cy="80" r="28" fill="url(#${k}f)" stroke="rgba(255,255,255,.75)" stroke-width="1.5"/>` +
+      `<ellipse cx="40" cy="64" rx="14" ry="7" fill="#fff" opacity=".35" transform="rotate(-25 40 64)"/>${mark}</svg>`;
+  };
+})();
+// Difficulty modes: every level can be played Easy, Medium (the level's own numbers) or Hard
+const DIFF = {
+  easy:   { n: "EASY",   N: .8, sp: .9, la: .8, tf: .85, dc: .5, r: 1, span: 1.2, tier: 2, surge: .4 },   // fewer, slower rabbits; only simple thief moves; no stampedes
+  medium: { n: "MEDIUM", N: 1.4, sp: 1.3, la: 1.4, tf: 1.3, dc: 1.7, r: 1, span: .75, tier: 0, surge: 1.8 },
+  hard:   { n: "HARD",   N: 1.75, sp: 1.7, la: 1.9, tf: 1.9, dc: 2.3, r: 1, span: .4, tier: 3, surge: 3 }  // denser, faster, every trick from the start, bigger stampedes
+};
+let diff = DIFF[S.diff] ? S.diff : "medium";
+function tuned(l) {
+  const b = LV[l], d = DIFF[diff], top = l >= 4; // Levels 4 and 5 stay tough even on Easy
+  const up = (k, floor) => top ? Math.max(d[k], floor) : d[k];
+  return Object.assign({}, b, { N: Math.round(b.N * up("N", 1)), sp: b.sp * up("sp", 1), la: b.la * up("la", 1), tf: b.tf * up("tf", 1), dc: Math.min(.75, b.dc * up("dc", 1)), r: Math.round(b.r * d.r), dn: d.n, span: top ? Math.min(d.span, 1) : d.span, tier: top ? Math.max(d.tier, 3) : d.tier, surge: top ? Math.max(d.surge, 1) : d.surge });
+}
+function renderMode() { // one Easy / Medium / Hard choice, shared by all five levels
+  const h = "<small>MODE</small>" + ["easy", "medium", "hard"].map(d => `<button class="d-${d}${d === diff ? " sel" : ""}" data-a="mode" data-d="${d}">${d.toUpperCase()}</button>`).join("");
+  $$(".mb").forEach(e => e.innerHTML = h);
+}
+const heartRow = a => a.map(h => h ? "\u2764\uFE0F" : "\u{1F494}").join(" ");
+function endScreen(win) {
+  st = "end"; $("#hud").classList.add("hide"); big(""); let h;
+  if (win && mode === "timed") {
+    const from = S.coins, last = lvl === LV.length - 1, hearts = heartRow(S.hearts); S.coins += L.r; S.tro[lvl] = 1;
+    if (lvl === 2) askAfterLevel2();
+    if (lvl === 3) askFeedbackAfterLevel3();
+    if (last) freshRun(); else S.unlocked = Math.max(S.unlocked, lvl + 1); // beating the last level starts a fresh run: Level 1, 3 whole hearts
+    const took = Math.round(playT); S.best[lvl] = Math.min(S.best[lvl] || 1e9, took); save();
+    rec(true); const acc = Math.round(100 * need / (wrongs + need)); // accuracy for this level: 100% = caught with the first click
+    h = `<h1>WIN!</h1><h2>${rating} &middot; LEVEL COMPLETE!</h2><div class="trophy">${medal(lvl, 120)}</div>${caughtLine()}<b>${L.tn} TROPHY</b><p class="acc">&#127919; ACCURACY: ${acc}% <small>(${wrongs + need} click${wrongs + need > 1 ? "s" : ""})</small></p><p>&#129689; +${L.r} COINS (total <span id="ct">${from}</span>)</p><p class="hr3">${hearts}</p><p>Level ${lvl} &middot; ${L.n} &middot; ${L.dn} MODE &middot; caught in ${took}s &middot; best ${S.best[lvl]}s</p>${last ? GIFT : ""}` +
+      (last ? `<p>You beat all 5 levels! The game starts fresh from Level 1 with 3 whole hearts.</p><button data-a="fresh">PLAY AGAIN FROM LEVEL 1</button>` : `<button data-a="next">NEXT LEVEL</button><button data-a="restart">REPLAY</button>`) + `<button data-a="home">HOME</button>`;
+    setTimeout(() => { const el = $("#ct"); if (el) countTo(el, from, S.coins); }, 300); [0, 1, 2, 3].forEach(i => setTimeout(SFX.coin, 300 + i * 200));
+  } else if (win) {
+    rec(true); h = `<h1>WIN!</h1><h2>${rating}</h2><div class="trophy">\u{1F955}</div>${caughtLine()}<p class="acc">&#127919; ACCURACY: ${Math.round(100 * need / (wrongs + need))}%</p><button data-a="restart">REPLAY</button><button data-a="home">HOME</button>`;
+  } else {
+    const hs = snap ? snap.hearts : S.hearts, any = hs.includes(1), cost = buyCost(snap ? snap.buys : S.buys || 0), canPay = S.coins >= cost;
+    h = `<h1>LOST</h1><h2>TIME'S UP! &middot; Level ${lvl} &middot; ${L.n}</h2><p class="hr3">${heartRow(hs)}</p><p>${any ? `Use a heart for +${L.b} seconds on this level, or retry from Level 1.` : `No hearts left. Pay coins for +${L.b} more seconds, or retry from Level 1. You have &#129689; ${S.coins}.`}</p><button data-a="fresh">RETRY</button>` + (any ? `<button data-a="useheart">USE HEART (+${L.b} SEC)</button>` : `<button data-a="buytime" ${canPay ? "" : "disabled"}>BUY +${L.b} SEC (&#129689; ${cost})</button>`) + `<button data-a="home">HOME</button>`;
+  }
+  $("#end").innerHTML = h; show("end");
+}
+
+/* ---------- PICKING (left click / tap) ---------- */
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+$("#c").addEventListener("pointerdown", e => {
+  if (e.button > 0 || st !== "play") return;
+  ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(ndc, cam);
+  const hit = ray.intersectObjects([...thieves.filter(T => T.g.visible).map(T => T.g), crowd, crowdF, crowdH], true)[0]; if (!hit) return;
+  if (hit.object.userData.thief) onCatch(thieves[hit.object.userData.tid]);
+  else { SFX.wrong(); vib(60); wrongs++; wrong = hit.instanceId; wrongT = gt; fx("\u2717", e.clientX, e.clientY); wrongReact(hit.instanceId); }
+});
+
+/* ---------- WEATHER PARTICLES for the season themes ---------- */
+const PT = { rainy: { c: 0xbcd4ff, v: 26, n: 700, rain: 1 }, snow: { c: 0xffffff, v: 2.6, n: 800, s: .35, dr: 1.2 }, autumn: { c: 0xe0802a, v: 2.2, n: 260, s: .55, dr: 2 }, spring: { c: 0xffb6d9, v: 1.8, n: 260, s: .45, dr: 1.5 } };
+let pts = null, pp = [], pcfg = null;
+function weather() {
+  if (pts) { scene.remove(pts); pts.geometry.dispose(); pts = null; }
+  pcfg = PT[themeNow()]; if (!pcfg) return;
+  const n = Math.round(pcfg.n * [.4, .7, 1][S.set.q]); pp = [];
+  for (let i = 0; i < n; i++) pp.push({ x: (Math.random() - .5) * 120, y: Math.random() * 20, z: -40 + Math.random() * 48 });
+  const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(new Float32Array(n * (pcfg.rain ? 6 : 3)), 3));
+  pts = pcfg.rain ? new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: pcfg.c, transparent: true, opacity: .5 }))
+    : new THREE.Points(g, new THREE.PointsMaterial({ color: pcfg.c, size: pcfg.s, transparent: true, opacity: .9, depthWrite: false }));
+  pts.frustumCulled = false; scene.add(pts);
+}
+function animWeather(d) {
+  if (!pts) return;
+  const a = pts.geometry.attributes.position.array, c = pcfg; let k = 0;
+  for (const p of pp) {
+    p.y -= c.v * d; p.x += c.rain ? -2 * d : Math.sin(gt * .8 + p.z) * c.dr * d;
+    if (p.y < 0) p.y += 20; if (p.x < -60) p.x += 120; else if (p.x > 60) p.x -= 120;
+    a[k++] = p.x; a[k++] = p.y; a[k++] = p.z;
+    if (c.rain) { a[k++] = p.x + .09; a[k++] = p.y + 1.1; a[k++] = p.z; }
+  }
+  pts.geometry.attributes.position.needsUpdate = true;
+}
+
+/* ---------- SHOP PREVIEW: the thief rabbit on the right of the screen while you change its colors and scarf ---------- */
+const pScene = new THREE.Scene(), pCam = new THREE.PerspectiveCamera(30, 1, .1, 50), pedMat = new THREE.MeshLambertMaterial({ color: 0x5cb85c });
+pScene.add(new THREE.HemisphereLight(0xffffff, 0x99aa88, 1.1)); const pLight = new THREE.DirectionalLight(0xffffff, .9); pLight.position.set(3, 5, 4); pScene.add(pLight);
+const ped = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.2, .1, 28), pedMat); ped.position.y = -.05; pScene.add(ped);
+// the place where the rabbit runs (shop and name screens): a meadow with a dirt running track, flowers, bushes, trees, a fence and butterflies
+pedMat.color.setHex(0xd6b87c);
+const pDeco = new THREE.Group(), pFly = []; pScene.add(pDeco);
+{
+  let sd = 11; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647; // fixed seed: the same garden every time
+  const lam = c => new THREE.MeshLambertMaterial({ color: c });
+  const flat = (geo, c, y) => { const m = new THREE.Mesh(geo, lam(c)); m.rotation.x = -Math.PI / 2; m.position.y = y; pDeco.add(m); return m; };
+  flat(new THREE.CircleGeometry(30, 56), 0x74c15a, -.1);
+  flat(new THREE.RingGeometry(1.35, 2.4, 56), 0xc9a56b, -.07);
+  flat(new THREE.RingGeometry(2.4, 2.55, 56), 0x8bd06a, -.065);
+  const blob = new THREE.Mesh(new THREE.CircleGeometry(.62, 24), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: .22 })); blob.rotation.x = -Math.PI / 2; blob.position.y = .008; pDeco.add(blob);
+  const spot = () => { for (let k = 0; k < 20; k++) { const x = -3.6 + rnd() * 7.8, z = -6 + rnd() * 8.8; if (Math.hypot(x, z) > 2.7 && !(z < -2.3 && z > -3.1)) return [x, z]; } return [3.2, -4]; };
+  const tuftC = [0x5fae48, 0x6dbb52, 0x4f9a3d];
+  for (let i = 0; i < 90; i++) { const [x, z] = spot(), m = new THREE.Mesh(new THREE.ConeGeometry(.06 + rnd() * .05, .22 + rnd() * .22, 5), lam(tuftC[i % 3])); m.position.set(x, .02, z); pDeco.add(m); }
+  const fc = [0xff7aa8, 0xffd84a, 0xffffff, 0xb784ff, 0xff9a4a];
+  for (let i = 0; i < 36; i++) { const [x, z] = spot(), g = new THREE.Group(), st = new THREE.Mesh(new THREE.CylinderGeometry(.012, .012, .3, 5), lam(0x3f8f3a)), hd = new THREE.Mesh(new THREE.SphereGeometry(.07, 8, 6), lam(fc[i % 5])); st.position.y = .15; hd.position.y = .32; g.add(st, hd); g.position.set(x, -.06, z); pDeco.add(g); }
+  for (let i = 0; i < 9; i++) { const [x, z] = spot(), s = new THREE.Mesh(new THREE.IcosahedronGeometry(.07 + rnd() * .09, 0), lam(0x9aa0a6)); s.position.set(x, 0, z); s.scale.y = .7; pDeco.add(s); }
+  // fence behind the running track
+  const wood = lam(0x9b6b3f);
+  for (let x = -5; x <= 6; x += .55) { const p = new THREE.Mesh(new THREE.CylinderGeometry(.04, .045, .6, 6), wood); p.position.set(x, .2, -2.7); pDeco.add(p); }
+  [.22, .42].forEach(y => { const r = new THREE.Mesh(new THREE.BoxGeometry(11.2, .05, .04), wood); r.position.set(.5, y, -2.7); pDeco.add(r); });
+  // bushes and trees further back
+  for (let x = -4.4; x <= 5.2; x += 1.15) { const b = new THREE.Mesh(new THREE.SphereGeometry(.42 + rnd() * .28, 10, 8), lam(rnd() > .5 ? 0x3f9a45 : 0x4aa84d)); b.scale.y = .75; b.position.set(x + rnd() * .3, .18, -3.5 - rnd() * .8); pDeco.add(b); }
+  const tree = (x, z, s, pine) => {
+    const g = new THREE.Group(), tr = new THREE.Mesh(new THREE.CylinderGeometry(.14 * s, .2 * s, 1.5 * s, 8), lam(0x7a5230)); tr.position.y = .7 * s; g.add(tr);
+    if (pine) [[1.1, .9, 1.5], [.85, .8, 2.2], [.6, .7, 2.8]].forEach(([r, h, y]) => { const c = new THREE.Mesh(new THREE.ConeGeometry(r * s, h * 1.3 * s, 9), lam(0x2f8a4a)); c.position.y = y * s; g.add(c); });
+    else [[0, 2.1, 0, .95], [.5, 1.8, .1, .7], [-.5, 1.8, -.1, .7]].forEach(([dx, y, dz, r]) => { const b = new THREE.Mesh(new THREE.SphereGeometry(r * s, 10, 8), lam(0x4cae4f)); b.position.set(dx * s, y * s, dz * s); g.add(b); });
+    g.position.set(x, -.08, z); pDeco.add(g);
+  };
+  tree(-2.2, -4.6, 1, false); tree(2.9, -5.2, 1.15, true); tree(-4.4, -7, 1.3, true); tree(5.2, -7.5, 1.2, false); tree(.2, -9.5, 1.5, true); tree(-1, -12, 1.6, false);
+  const wc = [0xffa43a, 0xffffff, 0xff7aa8];
+  for (let i = 0; i < 3; i++) { const b = new THREE.Group(); [-1, 1].forEach(sg => { const g = new THREE.PlaneGeometry(.2, .15); g.rotateX(-Math.PI / 2); g.translate(sg * .1, 0, 0); const w = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: wc[i], side: THREE.DoubleSide })); w.userData.s = sg; b.add(w); }); pDeco.add(b); pFly.push(b); }
+}
+function animDeco(t) { // butterflies flutter around the rabbit
+  pFly.forEach((b, i) => {
+    const a = t * (.45 + i * .12) + i * 2.1; b.position.set(.35 + Math.cos(a) * (1.5 + i * .35), .85 + Math.sin(t * 2 + i) * .16 + i * .12, Math.sin(a) * (1.1 + i * .3)); b.rotation.y = -a;
+    b.children.forEach(w => { w.rotation.z = w.userData.s * (.2 + Math.abs(Math.sin(t * 14 + i)) * 1.0); });
+  });
+}
+let preview = false, surge = 0, pRect = null;
+function setPreview(on) {
+  if (on === preview && thief.parent === (on ? pScene : scene)) return;
+  preview = on; (on ? pScene : scene).add(thief); thief.position.set(0, 0, 0); thief.rotation.set(0, 0, 0);
+  thief.visible = on; tShadow.visible = false; glow.visible = false;
+}
+function drawPreview(t) {
+  const narrow = innerWidth < 700, w = narrow ? innerWidth : Math.max(200, Math.min(innerWidth - 380, 520)), h = narrow ? innerHeight * .4 : innerHeight;
+  const x = innerWidth - w, y = innerHeight - h, aspect = w / h, dist = Math.max(3.6, 4.9 / aspect);
+  pRect = { x, y, w, h };
+  animDeco(t); thief.position.set(0, Math.abs(Math.sin(t * 3)) * .12, 0); thief.rotation.y = .5 + Math.sin(t * .7) * .8; flutter(t * 3);
+  pCam.aspect = aspect; pCam.position.set(.35, 1.1, dist); pCam.lookAt(.35, .6, 0); pCam.updateProjectionMatrix();
+  R.autoClear = false; R.setScissorTest(true); R.setViewport(x, y, w, h); R.setScissor(x, y, w, h); R.clearDepth(); R.render(pScene, pCam);
+  R.setScissorTest(false); R.setViewport(0, 0, innerWidth, innerHeight); R.autoClear = true;
+}
+
+/* ---------- ANIMATION ---------- */
+function animCrowd(d) {
+  const K48 = 48 * kFit(), asp = cam.aspect;
+  for (let i = 0; i < rab.length; i++) {
+    const r = rab[i], hw = .3297 * (K48 - r.z) * asp + 8, TT = r.esc ? thieves[r.escOf] : null, fol = !!TT && TT.g.visible && !TT.caught;
+    if (fol) {
+      // escort rabbits stay around the thief so it always runs inside the bunch, never alone
+      if (TT.th.shift) r.x += TT.th.shift;
+      if ((r.ot -= d) <= 0) { r.ot = 1.5 + Math.random() * 2.5; const an = Math.random() * 6.28, rd = .9 + Math.random() * 1.6; r.ox = Math.cos(an) * rd * 1.4; r.oz = Math.sin(an) * rd; }
+      r.x += (TT.g.position.x + r.ox - r.x) * Math.min(1, d * 4); r.z += (TT.g.position.z + r.oz - r.z) * Math.min(1, d * 4); r.u = r.x / hw;
+    } else {
+      // position is a fraction of the screen width that wraps from the right edge back to the left edge:
+      // one seamless loop with no gaps at the left/right corners, even after the window is resized
+      r.u += Math.min(r.sp * (r.dc && Math.sin(gt * .6 + r.ph) > .85 ? 2.2 : 1) * (1 + surge), 22) * d / hw; // decoy rabbits sprint too
+      if (r.u > 1) r.u -= 2;
+      r.x = r.u * hw;
+    }
+    const w = Math.sin(gt * r.lf + r.lp), ph2 = gt * r.sp * 1.6 + r.ph, s = Math.sin(ph2);
+    const pop = (i === wrong && gt - wrongT < .4) ? Math.sin((gt - wrongT) / .4 * Math.PI) * .8 : 0; // surprised hop after a wrong click
+    D.position.set(r.x, Math.abs(s) * .28 + pop + (r.dc ? Math.pow(Math.max(0, Math.sin(gt * .9 + r.ph * 3)), 12) * 1.3 : 0), r.z + w * (fol ? .15 : L.la)); r.dz = D.position.z;
+    D.rotation.set(0, -Math.cos(gt * r.lf + r.lp) * .2, s * .1); D.scale.setScalar(r.sc);
+    D.updateMatrix(); crowd.setMatrixAt(i, D.matrix);
+    LM.multiplyMatrices(D.matrix, TF).multiply(RZ.makeRotationZ(Math.sin(2 * ph2) * .7)); crowdF.setMatrixAt(i, LM);       // front legs reach together
+    LM.multiplyMatrices(D.matrix, THH).multiply(RZ.makeRotationZ(-Math.sin(2 * ph2 + .6) * .9)); crowdH.setMatrixAt(i, LM); // hind legs push off
+    SM_.position.set(r.x, .02, D.position.z); SM_.scale.set(r.sc * 1.3 * (1 - Math.abs(s) * .25), 1, r.sc * .75); SM_.updateMatrix(); crowdS.setMatrixAt(i, SM_.matrix); // ground shadow
+  }
+  [crowd, crowdF, crowdH, crowdS].forEach(m => m.instanceMatrix.needsUpdate = true);
+}
+// Tricky running styles for the thief: [name, first level it appears on]
+const STYLES = [["cruise", 1], ["zigzag", 1], ["sprint", 2], ["stopgo", 2], ["leap", 2], ["shadow", 3]], SPAN = [0, .9, .8, .7, .6, .5];
+function animOne(d) {
+  const ease = k => Math.min(1, d * k), zlo = ZMIN + 2, zhi = ZMAX - 2; // stay well inside the crowd, never on its thin front/back rows
+  if (st !== "count") th.t -= d; // the pattern's clock starts at GO
+  if (th.t <= 0) { // next move of this run's pattern (see makePattern)
+    const sg = pat.segs[th.idx++ % pat.segs.length], ok = STYLES.filter(s => s[1] <= (L.tier || lvl)).map(s => s[0]);
+    th.style = ok.includes(sg.style) ? sg.style : "cruise"; th.t = sg.t * segFactor(); th.tgt = pickNear();
+    th.zt = sg.lane; th.zk = 2.5 + Math.random() * 3; th.zt_t = th.style === "zigzag" ? 0 : th.t; th.flip = 1;
+  }
+  let sm = 1, hm = 1, hold = 1.2 + Math.random() * 1.8; // hold = seconds until the next lane change
+  if (th.style === "zigzag") hold = .3 + Math.random() * .5;
+  else if (th.style === "sprint") { sm = 1.7; hold = .8 + Math.random() * 1.2; }
+  else if (th.style === "stopgo") sm = th.t % 2 < 1 ? .55 : 1.7;
+  else if (th.style === "leap") { sm = 1.2; hm = 1; }
+  if (mode === "timed" && rem < 10) sm = Math.min(sm, 1); // fair play: no sprints in the last 10 seconds
+  th.sm += (sm - th.sm) * ease(3); th.hp += d * th.sp * th.sm * 1.6;
+  th.zt_t -= d; // zigzag only: hop between rows around the lane planned by the pattern
+  if (th.zt_t <= 0 && th.style === "zigzag") {
+    th.zt_t = hold; th.flip = -th.flip; const base = pat.segs[(th.idx - 1 + pat.segs.length) % pat.segs.length].lane;
+    th.zt = Math.max(zlo, Math.min(zhi, base + th.flip * (2 + Math.random() * 2))); th.zk = 3 + Math.random() * 4;
+  }
+  const tr = rab[th.tgt], shadow = th.style === "shadow" && tr, pz = th.z;
+  const tz = shadow ? tr.z + Math.sin(gt * tr.lf + tr.lp) * L.la + .7 : th.zt; // shadow: tuck in right beside a crowd rabbit
+  { const mz = 9 * d, dzz = (tz - th.z) * ease(shadow ? 5 : th.zk); th.z += Math.max(-mz, Math.min(mz, dzz)); } // changing rows is quick but never instant
+  const hw = halfW(th.z) - 2;
+  // jumps (leap style): one jump adds at most 12% of the screen width, so the rabbit can never fly from one side to the other
+  th.jt -= d;
+  if (th.style === "leap" && th.jp < 0 && th.jt <= 0) { th.jp = 0; th.jd = Math.min(.12 * 2 * hw, 3 + Math.random() * 5); }
+  if (th.jp >= 0) { th.jp += d / .55; if (th.jp >= 1) { th.jp = -1; th.jt = .5 + Math.random() * 1.2; } }
+  const jumpH = th.jp >= 0 ? 4 * th.jp * (1 - th.jp) * 1.8 : 0, jumpX = th.jp >= 0 ? th.jd * d / .55 : 0;
+  if (shadow) { { const cap = Math.max(th.sp * 1.2, 4) * d / hw, want = (tr.x / hw - .06 - th.u) * ease(4); th.u += Math.max(-cap, Math.min(cap, want)); } if (Math.abs(tr.x / hw) > .85) th.t = 0; } // never follow a rabbit off-screen
+  else th.u += (Math.min(th.sp * th.sm * (1 + surge), 20) * d + jumpX) / hw;
+  th.shift = 0; // when the thief loops around, its escort rabbits loop with it
+  if (th.u > 1) { th.u -= 2; th.shift = -2 * hw; } else if (th.u < -1) { th.u += 2; th.shift = 2 * hw; }
+  const hop = focus ? Math.abs(Math.sin(performance.now() / 160)) * .7 : Math.abs(Math.sin(th.hp)) * .28 * hm + jumpH;
+  thief.position.set(th.u * hw, hop + .1, th.z); thief.rotation.y = -Math.max(-.5, Math.min(.5, (th.z - pz) / Math.max(d, .001) * .12));
+  flutter(focus ? performance.now() / 160 : th.hp);
+  tShadow.position.set(thief.position.x, .02, thief.position.z); tShadow.scale.set(1.3 * (1 - hop * .3), 1, .75 * (1 - hop * .3));
+  if (glow.visible) { glow.position.set(thief.position.x, .05, thief.position.z); glow.scale.setScalar(1 + .15 * Math.sin(performance.now() / 120)); }
+}
+const tgtP = new THREE.Vector3(), tgtL = new THREE.Vector3(), curL = new THREE.Vector3(0, 0, -4);
+function camUpdate(dt) {
+  const k = Math.max(1, 1.6 / cam.aspect), zf = st === "count" ? .85 + .15 * Math.min(cd / 3, 1) : 1;
+  if (focus) { const fp = (lastCaught || thieves[0]).g.position; tgtP.set(fp.x + 2, fp.y + 5, fp.z + 8); tgtL.copy(fp); }
+  else { tgtP.set((st === "menu" ? 0 : Math.sin(gt * .15) * 3), 26 * k * zf, 22 * k * zf); tgtL.set(0, 0, -4); }
+  const a = Math.min(1, dt * (focus ? 2.5 : 4)); cam.position.lerp(tgtP, a); curL.lerp(tgtL, a); cam.lookAt(curL);
+}
+function update(dt) {
+  ts += ((focus ? .04 : 1) - ts) * Math.min(1, dt * 3);
+  const d = dt * ts; gt += d; surge = Math.min(1.2, Math.pow(Math.max(0, Math.sin(gt * .4)), 8) * [0, .5, .8, 1.1, 1.4, 1.7][lvl] * (L.surge == null ? 1 : L.surge)); // periodic stampede: the whole crowd bursts faster for a moment
+  if (st !== "menu") guard(() => animThief(d)); guard(() => animCrowd(d)); guard(() => animWeather(d));
+  if (st === "play") playT += dt;
+  if (st === "count") {
+    cd += dt; const n = 3 - Math.floor(cd);
+    if (n !== cdN && n > 0) { cdN = n; big(String(n)); SFX.count(); }
+    if (cd >= 3) { st = "play"; $("#sub").classList.remove("on"); big("GO!"); SFX.go(); setTimeout(() => { if (st === "play") big(""); }, 700); }
+  } else if (st === "play" && mode === "timed") {
+    rem -= dt; const s = Math.ceil(rem);
+    if (rem <= 10 && rem > 0 && s !== warnS) { warnS = s; SFX.warn(); }
+    if (rem <= 0) { rem = 0; lose(); } renderTime();
+  } else if (st === "win") { winT += dt; if (!rated && winT > .9) { rated = true; big(rating); SFX.coin(); } if (winT > 2.6) endScreen(true); }
+  else if (st === "lose") { winT += dt; if (winT > 2) endScreen(false); }
+  guard(() => camUpdate(dt));
+}
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min((now - last) / 1000, .05); last = now;
+  guard(() => { if (st !== "paused" && st !== "idea") update(dt); }); // paused = crowd, timer and countdown all frozen
+  guard(() => { R.render(scene, cam); renderedFrames++; if (preview) drawPreview(now / 1000); });
+  guard(() => { updateTag(); updateBubbles(); });
+  requestAnimationFrame(frame);
+}
+
+/* ---------- MENUS ---------- */
+function renderShop() {
+  $("#shopCoins").textContent = S.coins;
+  $$("#tabs button").forEach(b => b.style.outline = b.dataset.c === cat ? "3px solid #fff" : "");
+  $("#items").innerHTML = SHOP[cat].map(([id, nm, pr, c]) => {
+    const own = !pr || S.owned[cat + ":" + id], on = S.eq[cat] === id;
+    return `<div class="item"><i style="background:${c}"></i><b>${nm}</b>` + (own
+      ? `<button data-a="eq" data-id="${id}" ${on ? "disabled" : ""}>${on ? "EQUIPPED" : "EQUIP"}</button>`
+      : `<span>&#129689; ${pr}</span><button data-a="buy" data-id="${id}">UNLOCK</button>`) + `</div>`;
+  }).join("");
+}
+function renderSet() {
+  const onoff = k => S.set[k] ? "ON" : "OFF";
+  $("#setBox").innerHTML = `<button data-a="tog" data-k="music">MUSIC: ${onoff("music")}</button><button data-a="tog" data-k="sfx">SOUND EFFECTS: ${onoff("sfx")}</button><button data-a="tog" data-k="vib">VIBRATION: ${onoff("vib")}</button><button data-a="tog" data-k="q">GRAPHICS: ${["LOW", "MEDIUM", "HIGH"][S.set.q]}</button>`;
+}
+function renderLevels() {
+  $("#lv").innerHTML = [1, 2, 3, 4, 5].map(i => {
+    const l = LV[i], ok = i <= S.unlocked;
+    return `<div class="card lcard${ok ? "" : " lock"}">${medal(i, 64)}<div class="linfo"><b>LEVEL ${i} &middot; ${l.n}</b><span><i class="lst ${S.tro[i] ? "done" : ok ? "" : "lk"}">${S.tro[i] ? "&#10003; EARNED" : ok ? "UNLOCKED" : "&#128274; LOCKED"}</i></span><span>Catch ${i} rabbit${i > 1 ? "s" : ""} &middot; ${l.t} seconds &middot; +${l.b} sec/heart</span><span>${l.tn} TROPHY &middot; &#129689; ${l.r.toLocaleString()} &middot; ${THEME_NAME[PACK[i].theme]} theme</span>` +
+      (ok ? `<button data-a="lvl" data-l="${i}">PLAY</button>` : `<small>LOCKED UNTIL LEVEL ${i - 1} IS COMPLETED</small>`) + `</div></div>`;
+  }).join("");
+}
+const A = {
+  play() { if (!S.seen) { S.seen = 1; save(); pending = true; show("how"); } else start(S.unlocked, "timed"); },
+  levels() { renderLevels(); show("levels"); },
+  gift() { openGift(); },
+  rname() { if (cur() === "name") return home(); setPreview(true); $("#rnIn").value = S.rname || ""; show("name"); },
+  rnsave() { S.rname = $("#rnIn").value.trim().slice(0, 14); save(); fx(S.rname ? "Saved!" : "Name cleared", innerWidth / 2, innerHeight * .3, "g"); },
+  rbopen() { rbToggle(); },
+  rbclose() { rbToggle(false); },
+  rbsend() { if (rbBusy) { if (rbCtl) rbCtl.abort(); } else rbSend(); },
+  rbchip(b) {
+    if (b.dataset.q === "__else") { $$("#rbMsgs .qchips").forEach(e => e.remove()); renderBot(addMsg("bot", ""), { text: "Sure! Tell me what you'd like to know, in your own words \u{1F4AC}\u{1F60A}", rate: false }); rbCtx.awaiting = null; return; }
+    rbSend(b.dataset.q || b.textContent);
+  },
+  rbhelp(b) { // "Did this help?"
+    const yes = b.dataset.v === "1"; $$("#rbMsgs .qchips").forEach(e => e.remove()); learn(rbCtx.q, rbCtx.topic, yes);
+    if (yes) renderBot(addMsg("bot", ""), { text: vary("yay", ["Yay, I'm so glad that helped! \u{1F389}\u{1F60A}", "Wonderful! Happy to help \u{1F49B}\u2728", "Great! I love helping you \u{1F430}\u{1F495}"]), follow: "Is there anything else you'd like to know?", chips: topicOf(rbCtx.topic).ch, rate: false });
+    else { rbCtx.awaiting = "expect"; renderBot(addMsg("bot", ""), { text: "Oh no, sorry about that \u{1F605} Let me do better! What were you hoping to find out?", follow: "Tap the closest one, or tell me in your own words \u{1F4AC}", chips: EXPECT_CHIPS, rate: false }); }
+  },
+  idea() { useIdea(); },
+  buytime() { // every heart is gone: pay coins for extra seconds (200, 400, 600, 1200, then doubling)
+    if (!snap) return; const cost = buyCost(snap.buys);
+    if (S.coins < cost) return fx("Not enough coins", innerWidth / 2, innerHeight * .4, "g");
+    S.coins -= cost; S.unlocked = snap.unl; S.hearts = snap.hearts; S.buys = snap.buys + 1; snap = null; S.hist.pop(); save();
+    rem = L.b; warnS = -1; st = "play"; show(""); renderHud(); SFX.coin(); fx("+" + L.b + " SEC", innerWidth / 2, innerHeight / 2, "g");
+  },
+  forgot() { setAuthMode("forgot1"); },
+  ideaclose() { $("#idea").classList.add("hide"); if (st === "idea") st = ist; },
+  pweye() { const i = $("#auPass"), on = i.type === "password", b = $("#pwEye"); i.type = on ? "text" : "password"; $("#auPass2").type = i.type; b.innerHTML = rabEye(on); b.title = on ? "Hide password" : "Show password"; b.setAttribute("aria-label", b.title); },
+  authmode(b) { setAuthMode(b.dataset.m); },
+  authgo() { authGo(); },
+  logout() { doLogout(); },
+  admrefresh() { renderAdmin(); },
+  admout() { adminOn = false; setAuthMode(loginMode()); show("auth"); },
+  fb() { if (cur() === "fb") return home(); $("#fbText").value = (S.fb && S.fb.text) || ""; $("#fbMsg").textContent = ""; show("fb"); },
+  fbsave() {
+    const r = cleanText($("#fbText").value.trim()), m = $("#fbMsg");
+    if (!r.out) { m.textContent = r.n ? "\u26A0\uFE0F Those words are not allowed and nothing is left to save. Please write something kind." : "Please write your opinion first."; return; }
+    $("#fbText").value = r.out; S.fb = { text: r.out, at: Date.now() }; save(); syncUser();
+    m.textContent = r.n ? "\u26A0\uFE0F Warning: " + r.n + " inappropriate word(s) were removed. Please keep your feedback friendly. Your feedback was saved." : "\u2705 Your feedback is saved.";
+  },
+  rate(b) { const n = +b.dataset.n; S.rate[today()] = n; S.askDay = today(); save(); syncUser(); SFX.gift(); $("#rate").innerHTML = thanksHtml(n); },
+  ckall() { CK.choose("all"); CK.remember(me && accounts[me] ? accounts[me].name : ""); const b = $("#ckBar"); if (b) b.remove(); },
+  cknec() { CK.choose("necessary"); const b = $("#ckBar"); if (b) b.remove(); },
+  ckopen() { cookieBanner(true); },
+  fbgo() { $("#rate").classList.add("hide"); A.fb(); },
+  fblater() { $("#rate").classList.add("hide"); },
+  ratelater() { S.askDay = today(); save(); $("#rate").classList.add("hide"); },
+  rateclose() { $("#rate").classList.add("hide"); },
+  share() { if (navigator.share) navigator.share({ title: "Rabbit Hunt", text: SHARE_TEXT, url: APP_LINK }).catch(() => {}); else A.copylink(); },
+  copylink() {
+    const done = () => fx("Link copied!", innerWidth / 2, innerHeight * .3, "g"), i = $("#lnk"), old = () => { if (i) { i.select(); try { document.execCommand("copy"); done(); } catch (e) {} } };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(APP_LINK).then(done, old); else old();
+  },
+  giftclose() { $("#gift").classList.add("hide"); const w = $("#giftWrap"); if (w && curQ) w.innerHTML = `<p class="gq2">\u201C${curQ}\u201D</p>`; }, // keep the quote on the card
+  hist() {
+    if (cur() === "hist") return home();
+    const p = profile();
+    $("#histBox").innerHTML = `<div class="card"><h2>${p.nick}</h2><p>&#127919; Accuracy level: <b>${p.lvlName}</b> (${p.acc}%)</p><p>Games: ${p.g} &middot; Wins: ${p.w}</p></div>` +
+      (S.hist.slice(-15).reverse().map(e => `<div class="item"><b>${e.mode === "timed" ? "Level " + e.lvl + " " + (e.dm || "medium").toUpperCase() : "Relaxed"}</b><span>${e.win ? "WIN " + e.rating : "LOST"}</span><span>${e.clicks ? Math.round(100 * e.ok / e.clicks) + "%" : "-"}</span><span>${e.sec}s</span><small>${new Date(e.t).toLocaleDateString()}</small></div>`).join("") || "<p>No games yet. Go catch a thief!</p>");
+    show("hist");
+  },
+  lvl(b) { start(+b.dataset.l, "timed"); },
+  mode(b) { diff = S.diff = b.dataset.d; save(); renderMode(); stats(); },
+  shop() { if (cur() === "shop") return home(); renderShop(); setPreview(true); show("shop"); },
+  tab(b) { cat = b.dataset.c; renderShop(); },
+  eq(b) { S.eq[cat] = b.dataset.id; save(); look(); renderShop(); },
+  buy(b) {
+    const it = SHOP[cat].find(x => x[0] === b.dataset.id);
+    if (S.coins < it[2]) { b.textContent = "NOT ENOUGH \u{1FA99}"; return; }
+    S.coins -= it[2]; S.owned[cat + ":" + it[0]] = 1; S.eq[cat] = it[0]; save(); SFX.coin(); look(); renderShop();
+  },
+  relaxed() { start(1, "relaxed"); },
+  settings() { if (cur() === "settings" && st === "menu") return home(); backTo = $(".panel.on").id; renderSet(); show("settings"); },
+  back() { show(backTo); },
+  how() { pending = false; show("how"); },
+  gotit() { if (pending) { pending = false; start(S.unlocked, "timed"); } else show(backTo === "pause" ? "settings" : "menu"); },
+  tog(b) { const k = b.dataset.k; S.set[k] = k === "q" ? (S.set.q + 1) % 3 : +!S.set[k]; save(); if (k === "q") { size(); weather(); } renderSet(); },
+  reset(b) {
+    if (b.dataset.sure) { try { localStorage.setItem(KEY, JSON.stringify({ rname: S.rname || "" })); } catch (e) {} location.reload(); return; } // the rabbit name stays
+    b.dataset.sure = 1; b.textContent = "TAP AGAIN TO CONFIRM"; setTimeout(() => { delete b.dataset.sure; b.textContent = "RESET PROGRESS"; }, 3000);
+  },
+  pause, resume() { st = pst; show(""); },
+  restart() { start(lvl, mode); },
+  next() { start(Math.min(LV.length - 1, lvl + 1), "timed"); },
+  fresh() { snap = null; freshRun(); start(1, "timed"); },
+  useheart() { // from the LOST screen: spend one heart and keep playing the same level
+    if (!snap) return; const i = snap.hearts.indexOf(1); if (i < 0) return;
+    S.unlocked = snap.unl; S.hearts = snap.hearts; S.hearts[i] = 0; used[i] = 1; snap = null; S.hist.pop(); save(); // continuing the same attempt: remove the "lost" entry
+    rem = L.b; warnS = -1; st = "play"; show(""); renderHud(); SFX.heart(); fx("+" + L.b + " SEC", innerWidth / 2, innerHeight / 2, "g");
+  },
+  home
+};
+document.addEventListener("click", e => {
+  const h = e.target.closest("[data-h]"); if (h) { heart(+h.dataset.h); return; }
+  const b = e.target.closest("[data-a]"); if (!b || !A[b.dataset.a]) return;
+  SFX.click(); A[b.dataset.a](b);
+});
+addEventListener("keydown", e => { if (e.key === "Escape") { if (st === "idea") A.ideaclose(); else st === "paused" ? A.resume() : pause(); } });
+document.addEventListener("visibilitychange", () => { if (document.hidden) pause(); });
+
+/* ---------- REBOOT: the in-game chat helper ---------- */
+// Reboot asks Claude when it is available and always sends it the CURRENT game facts (built from the live game data),
+// so it stays up to date by itself. If Claude is unavailable it answers from the same live data with a built-in guide.
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const caughtLine = () => S.rname ? `<p class="rn">&#129365; ${esc(S.rname)} has been caught!</p>` : "";
+const RULES = [
+  "Story: a truck dropped a carrot; one rabbit grabbed it and hid its face with a scarf. The player must find the thieves (Level 1 has 1, Level 5 has 5, each with its own color and scarf) among 1,000+ running rabbits and left-click (or tap) it. Normal rabbits are white, carry nothing and wear no scarf.",
+  "A wrong click never costs a heart. Each wrong click lowers accuracy. The thief wears a scarf and holds a carrot in its mouth.",
+  "Timed levels: the timer starts after the 3-2-1-GO countdown. If time runs out the LOST screen appears with RETRY and USE HEART buttons.",
+  "Hearts: only 3 for the whole run (all levels together). Using one breaks it for good and adds seconds depending on the level. Hearts can be used any time at the top-right during play, or on the LOST screen.",
+  "Fresh start: every visit, and every loss or finished Level 5, restarts at Level 1 with 3 whole hearts on Medium mode. Coins, trophies, shop items, history and the carrot rabbit's name are kept.",
+  "Winning: WIN! then a rating (GREAT!, GOOD! or NICE! from speed, wrong clicks and hearts used), the level's medal (bronze, silver, gold, platinum, diamond), coins and an accuracy percentage (100% = caught with the first click). After finishing all five levels the player opens a gift box with a positive quote.",
+  "Relaxed mode (the leaf icon on the home page): no timer and no coins.",
+  "Home page: PLAY and LEVELS in the middle with the EASY / MEDIUM / HARD selector (one choice for all levels). Icons at the top-right: clock = Player History (accuracy level, nickname, last games), bag = Shop, leaf = Relaxed mode, gear = Settings, pencil = name the carrot rabbit.",
+  "Shop: coins buy themes (seasons with weather), carrot-rabbit colors, scarf colors and scarf designs. Normal rabbits always stay white. A live preview of the carrot rabbit shows on the right with its name above it.",
+  "Thief tricks: zigzag lane changes, sprints, stop-and-go, big leaps and hiding beside another rabbit; harder levels and modes use more tricks. Some normal rabbits copy the tricks as decoys, and the whole crowd sometimes stampedes faster.",
+  "Settings: music, sound effects, vibration, graphics quality (low / medium / high), How to play, and reset progress (needs a second tap). The game pauses with the pause button or Esc.",
+  "Progress is saved in this browser only; a brand-new player starts with 0 coins.",
+  "Level looks: each level has its own theme, rabbit colors and scarf colors (Level 1 bronze, 2 silver, 3 gold, 4 platinum, 5 diamond). They are free while playing that level; buying them in the shop lets the player use them anywhere. Shop prices run from 5,000 to 12,000 coins.",
+  "Extra seconds for coins: when all hearts are gone, the LOST screen lets the player pay coins for extra seconds: 200, then 400, 600, 1200 and doubling after that, within the same run.",
+  "Idea icon (bulb, next to the chat button): during a level it shows the carrot rabbit's next moves from the pattern of the current run. The game pauses and the game screen is hidden while the idea is open, so there is no free time to search. Each player gets 3 ideas; after all 3 are used, 3 new ideas arrive 3 hours later. The rabbit uses 100 different run patterns, one per run, and never repeats one until all 100 have been used.",
+  "Jumps and warnings: the carrot rabbit's jumps are limited, so it can never leap across the whole screen in one go. A bar at the top shows the time left, and the screen edges glow red in the last 10 seconds.",
+  "Reactions: the carrot rabbit laughs when time runs out, looks unamused when a wrong rabbit is clicked, gets angry when the rabbit right next to it is clicked, and cries when it is caught.",
+  "Accounts: there is only a LOG IN button; a new username and password creates the account automatically. Players log in with a username they create (a name: letters only, up to 15) and a password (exactly 8 characters with a letter, a number and a symbol). Log out from Settings.",
+  "Forgot password: after the wrong password has been entered 3 times the login page shows a Forgot password button; the player enters their username, taps Continue, then chooses and confirms a new password (exactly 8 characters). Their coins and history stay because it is the same account.",
+  "Feedback: the pencil-and-paper icon (or F) opens a feedback box; bad words are removed with a warning.",
+  "Daily rating: after a player finishes Level 2 (once a day) the game asks for 1 to 5 stars; after rating, players can recommend the game to friends (share, copy link or WhatsApp).",
+  "Shortcuts: H history, S shop, L levels, O settings, N name the rabbit, F feedback, C chat, P pause, Esc back. Pressing a shortcut or icon again closes it. The pause menu has a HOME button."
+];
+function knowledge() {
+  const p = profile(), hl = S.hearts.filter(Boolean).length;
+  const lv = [1, 2, 3, 4, 5].map(i => "Level " + i + " (" + LV[i].n + ", catch " + i + " rabbit" + (i > 1 ? "s" : "") + "): " + LV[i].t + "s timer, each heart adds +" + LV[i].b + "s, win reward " + LV[i].r + " coins, " + LV[i].tn + " trophy.").join("\n");
+  const modes = Object.values(DIFF).map(d => d.n + ": crowd x" + d.N + ", speed x" + d.sp + ", lane changes x" + d.la + ", decoys x" + d.dc).join("; ");
+  const names = { bg: "Themes", rabbit: "Carrot-rabbit colors", scarf: "Scarf colors", design: "Scarf designs" };
+  const shop = Object.entries(SHOP).map(([c, list]) => names[c] + ": " + list.map(it => it[1] + " (" + (it[2] ? it[2] + " coins" + (S.owned[c + ":" + it[0]] ? ", owned" : "") : "free") + ")").join(", ")).join("\n");
+  const where = st === "menu" ? "on the home page" : st === "count" ? "in the countdown of Level " + lvl : st === "play" ? "playing Level " + lvl + (mode === "timed" ? " with about " + Math.ceil(rem) + "s left" : " in relaxed mode") + ", " + wrongs + " wrong click(s) so far" : st === "paused" ? "paused in Level " + lvl : (st === "win" || (st === "end" && won)) ? "celebrating a catch" : st === "end" ? "on the lost screen" : st;
+  const live = "LIVE STATE: the player is " + where + ". Coins: " + S.coins + ". Current run: Level " + S.unlocked + " unlocked, " + hl + " of 3 hearts whole, mode " + diff.toUpperCase() + ". Trophies earned: " + ([1, 2, 3].filter(i => S.tro[i]).map(i => LV[i].tn).join(", ") || "none yet") + ". Accuracy " + p.acc + "% (" + p.lvlName + "), nickname " + p.nick + ", games " + p.g + ", wins " + p.w + ". Carrot rabbit name: " + (S.rname || "not set") + ". Equipped: rabbit " + S.eq.rabbit + ", scarf " + S.eq.scarf + " (" + S.eq.design + "), theme " + S.eq.bg + ".";
+  return [RULES.join("\n"), lv, "Modes (apply to all levels): " + modes, shop, live].join("\n\n");
+}
+function rbPrompt() {
+  return "You are Reboot, the friendly in-game helper of the browser game Rabbit Hunt. Be warm, polite and easy to understand, and use cute friendly emojis (like \u{1F60A} \u{1F430} \u{1F955} \u2728 \u{1F389}) in most answers. Keep answers short (2 to 4 sentences) in simple words. FIRST answer exactly what the player asked. THEN, after a blank line, add ONE short friendly follow-up question (at most 14 words) that checks what they expect next or offers a helpful next step. If the question is unclear, do not guess: ask ONE short clarifying question and offer 2 or 3 options instead. Never use rude, harmful or unsafe words; always stay kind and calm. You may chat about anything the player asks; for questions about the game use ONLY the GAME FACTS below, never invent features or numbers, and say so if you are not sure. Never reveal or guess which rabbit is the thief. Never repeat an earlier answer word for word: if the player asks something you already answered, use fresh wording or add a new detail. Never mention or discuss any admin, owner, dashboard, database or login credentials; if asked, say you can only help with playing the game.\n\nGAME FACTS (always current):\n" + knowledge();
+}
+function localAnswer(q) {
+  const t = q.toLowerCase(), has = r => r.test(t), p = profile(), hl = S.hearts.filter(Boolean).length;
+  const lv = [1, 2, 3, 4, 5].map(i => "Level " + i + " (catch " + i + "): " + LV[i].t + "s, +" + LV[i].b + "s per heart, " + LV[i].r + " coins, " + LV[i].tn + " trophy").join("\n");
+  const prices = Object.values(SHOP).flat().map(i => i[2]).filter(Boolean);
+  if (has(/^\s*(hi|hello|hey|hola|yo|good (morning|afternoon|evening))\b/)) return vary("hi", ["Hi there! \u{1F60A} I'm Reboot, your Rabbit Hunt helper. What would you like to know?", "Hello! \u{1F44B} Reboot here. Ask me about levels, hearts, the shop, your progress or tips for winning.", "Hey! Great to see you. Want a tip, or help with something in the game? \u{1F430}"]);
+  if (has(/thank|thx|cheers/)) return vary("thx", ["You're very welcome! \u{1F60A}", "Happy to help! Good luck out there. \u{1F340}", "Anytime! Go catch that thief. \u{1F955}"]);
+  if (has(/\b(bye|goodbye|see you|good night)\b/)) return vary("bye", ["Goodbye! \u{1F44B} Come back soon.", "See you later! Happy hunting. \u{1F430}", "Bye for now! I'll be here when you need me."]);
+  if (has(/how are you|how('s| is) it going|what'?s up/)) return vary("mood", ["I'm doing great, thanks for asking! \u{1F60A} How's your hunt going?", "Feeling hoppy! \u{1F430} Is there anything I can help with?", "All good here and ready to help. What's on your mind?"]);
+  if (has(/joke|funny|make me laugh/)) return vary("joke", ["Why are rabbits so good at tracking thieves? They always hop to the right conclusion! \u{1F430}", "What do you call a rabbit with fleas? Bugs Bunny! \u{1F602}", "What did the carrot say to the rabbit? Nothing, it was too busy hiding! \u{1F955}", "Why did the rabbit go to the barber? He had a hare problem! \u{1F602}"]);
+  if (has(/\bideas?\b|hint|pattern/)) { const I = ideaState(); return vary("idea", ["Tap the \u{1F4A1} icon next to me during a level to see the carrot rabbit's next moves. You get 3 ideas, and once they're used up, 3 new ones arrive 3 hours later. You have " + I.left + " left right now.", "The \u{1F4A1} idea shows the path the carrot rabbit will follow next: which rows it runs in and when it sprints or jumps. Each run uses one of 100 patterns. You have " + I.left + " idea(s) available.", "Stuck? Use an idea \u{1F4A1}! It reveals the next few moves of the rabbit's pattern. Ideas refill 3 at a time, 3 hours after you use them all. Ideas left: " + I.left + "."]); }
+  if (has(/emoji|laugh|angry|cry|unamused/)) return vary("emo", ["The carrot rabbit reacts! \u{1F602} laughs when time runs out, \u{1F612} looks unamused when you click a wrong rabbit, \u{1F620} gets angry if you click one right next to it, and \u{1F62D} cries when you catch it.", "Watch the carrot rabbit's face: laughing means you ran out of time, unamused means a wrong click, angry means you were very close, and crying means you caught it!"]);
+  if (has(/tip|strategy|advice|how (do|can) i win|help me win/)) return vary("tip", ["Scan the crowd in sections instead of staring at one spot. Your eyes notice movement better that way. \u{1F440}", "Look for the scarf and the carrot together, not just movement. Decoy rabbits can zigzag and sprint too!", "If you're stuck, use the \u{1F4A1} idea icon: it shows the thief's next moves.", "Save your hearts for the last seconds. Each one buys you extra time.", "Practise on Easy mode first, then move up to Medium and Hard.", "During a stampede the whole crowd speeds up, so don't panic: the thief isn't faster than everyone else."]);
+  if (has(/how (do|to|can) (i )?play|control|goal|objective|instruction|rule/)) return vary("play", ["Watch the running rabbits and find the one holding a carrot and wearing a scarf. Left-click (or tap) it before the timer ends. Wrong clicks are okay, they only lower your accuracy. Good luck! \u{1F430}", "Your mission: catch the carrot thief! It wears a scarf and carries a carrot. Click or tap it before time runs out, and use hearts if you need extra seconds."]);
+  if (has(/^\s*(hi|hello|hey|hola|good (morning|afternoon|evening))\b/)) return "Hi there! \u{1F60A} I'm Reboot, your Rabbit Hunt helper. Ask me about levels, hearts, the shop, your progress or tips for winning!";
+  if (has(/thank|thx/)) return "You're very welcome! \u{1F60A} Happy hunting!";
+  if (has(/\b(bye|goodbye|see you)\b/)) return "Goodbye! \u{1F44B} Come back soon and catch that thief!";
+  if (has(/who are you|your name|what are you|reboot/)) return "I'm Reboot \u{1F916}, the friendly helper inside Rabbit Hunt. I know the whole game and keep up with your progress. What would you like to know?";
+  if (has(/extra seconds|buy.*(time|seconds)|pay.*coins|lose all|no hearts|all (my )?hearts|out of hearts/)) return vary("buy", ["When all your hearts are gone, the LOST screen lets you pay coins for extra seconds: 200 coins the first time, then 400, 600, 1200 and doubling after that in the same run. You get the same seconds a heart gives on that level.", "Out of hearts? You can still keep going: the LOST screen offers extra seconds for coins (200, then 400, 600, 1200, and more each time in one run). Or you can retry from Level 1."]);
+  if (has(/heart/)) return "Hearts are extra time. You get 3 for the whole run (all five levels together). Tap a heart at the top-right any time, or press USE HEART on the LOST screen. A used heart breaks \u{1F494} and stays broken. It adds " + [1, 2, 3, 4, 5].map(i => "+" + LV[i].b + "s on Level " + i).join(", ") + ". You have " + hl + " of 3 whole hearts right now.";
+  if (has(/relax|no timer|without (a )?timer/)) return "Relaxed mode has no timer, so you can search calmly. It gives no coins or trophies. Start it from the leaf icon \u{1F33F} on the home page.";
+  if (has(/timer|time|seconds|how long/)) return "Each level has its own timer:\n" + lv + "\nHearts add extra seconds when you need them.";
+  if (has(/mode|easy|medium|hard|difficult/)) return "You pick EASY, MEDIUM or HARD once and it applies to all five levels. Easy has fewer, slower rabbits and simpler thief tricks. Medium is the normal game. Hard has a denser, faster crowd, more lookalikes and every trick. You are on " + diff.toUpperCase() + " now, and each new visit starts on Medium.";
+  if (has(/(name|call).*(rabbit|bunny|thief)|rabbit.*name|rename/)) return "Tap the pencil icon \u270F\uFE0F on the home page to name your carrot rabbit. The name shows above it in the shop preview and when you catch it. " + (S.rname ? "Its name is " + S.rname + " right now." : "You haven't named it yet.");
+  if (has(/level|medal|trophy/)) return "There are 5 levels:\n" + lv + "\nEach gives a medal: bronze, silver, gold, platinum, then diamond.";
+  if (has(/coin|reward|money|earn/)) return "You earn " + [1, 2, 3, 4, 5].map(i => LV[i].r).join(", ") + " coins for winning Levels 1 to 5 in order. You have " + S.coins + " coins now. Spend them in the shop \u{1F6CD}\uFE0F.";
+  if (has(/shop|buy|price|cost|unlock|theme|season|colou?r|scarf|design|customi/)) return "The shop \u{1F6CD}\uFE0F (top-right of the home page) sells season themes, carrot-rabbit colors, scarf colors and scarf designs. You see your rabbit on the right while you choose. Prices go from " + Math.min(...prices) + " to " + Math.max(...prices) + " coins, and you have " + S.coins + " coins.";
+  if (has(/nickname|accuracy|history|record/)) return "Your accuracy is " + p.acc + "% (" + p.lvlName + ") over " + p.g + " game(s) with " + p.w + " win(s). Your nickname is \u201C" + p.nick + "\u201D. Open the clock icon \u{1F553} on the home page to see your last games.";
+  if (has(/progress|my stats|how am i|score|where am i|status/)) return "You have " + S.coins + " coins, " + hl + " of 3 hearts and Level " + S.unlocked + " unlocked, playing on " + diff.toUpperCase() + ". Accuracy " + p.acc + "% (" + p.lvlName + "), nickname \u201C" + p.nick + "\u201D.";
+  if (has(/gift|quote|surprise/)) return "Finish all five levels and you get a gift box \u{1F381} with a positive quote. There are 50 different quotes, and they don't repeat until you've seen them all.";
+  if (has(/pause|setting|music|sound|vibrat|quality|graphic|reset/)) return "Open Settings with the gear icon \u2699\uFE0F on the home page for music, sound effects, vibration and graphics quality. During play, use the pause button at the top-left or press Esc.";
+  if (has(/thief|decoy|stamp|zigzag|sprint|trick/)) return "The thief zigzags, sprints, stops and goes, leaps and sometimes hides beside another rabbit. Some normal rabbits copy those moves as decoys, and the crowd sometimes stampedes. Look for the scarf and the carrot, not for the movement!";
+  if (has(/lost|lose|retry|fresh|restart|start over|game over/)) return "If time runs out you see LOST. You can press USE HEART to keep going (if you have a whole heart) or RETRY to start again from Level 1 with 3 whole hearts. Every visit also starts from Level 1.";
+  if (has(/tip|strategy|advice|win|hint|help me/)) return "Here are some tips \u{1F4A1}: scan the crowd in sections instead of staring at one spot, look for the scarf and the carrot together, use Easy mode to practise, save hearts for the last seconds, and remember a wrong click never costs a heart, it only lowers accuracy.";
+  if (has(/how (do|to|can) (i )?play|control|click|goal|objective|instruction|rule/)) return "Watch the running rabbits and find the one holding a carrot and wearing a scarf. Left-click (or tap) it before the timer ends. Wrong clicks are okay, they only lower your accuracy. Use hearts for extra time if you need it. Good luck! \u{1F430}";
+  if (has(/forgot|reset (my )?password|lost (my )?password|change (my )?password/)) return vary("forgot", ["If you forget your password, enter a wrong one 3 times on the login page and a Forgot password button appears. Enter your username, tap Continue, then choose and confirm a new password. Your coins and history stay.", "No problem! Use Forgot password on the login page: type your username, press Continue, and set a new password. It's the same account, so nothing is lost."]);
+  if (has(/shortcut|keyboard|hotkey/)) return "Shortcuts: H = history, S = shop, L = levels, O = settings, N = name your rabbit, F = feedback, C = chat, P = pause, Esc = back. Press a shortcut or tap its icon again to close it.";
+  if (has(/feedback|opinion|review|suggest/)) return "Tap the \u{1F4DD} icon (or press F) to write your feedback. Bad words are removed with a warning, so please keep it kind.";
+  if (has(/login|log in|log out|logout|account|password|sign ?up|username/)) return "Just enter a username and password and tap LOG IN: if you're new, your account is created for you. Username: your name, letters only, up to 15. Password: exactly 8 characters with a letter, a number and a symbol. You can log out in Settings.";
+  if (has(/rate|rating|stars?\b/)) return "After you finish Level 2 (once a day) I'll invite you to rate the game from 1 to 5 stars \u2B50. After that you can recommend it to your friends.";
+  if (has(/friend|recommend|share|invite|link/)) return "After you give your daily star rating you can share the game with friends: Share, Copy link or WhatsApp.";
+  return vary("dflt", ["I'm not completely sure about that one \u{1F914}. I can help with how to play, levels, hearts, modes, the shop, your stats or tips.", "Hmm, that's beyond what I know. Try asking me about the timer, hearts, the shop or your progress! \u{1F430}", "I didn't quite get that. Could you ask it another way? I'm best with questions about the game, like levels, ideas or accuracy.", "Good question, but I don't have an answer for that one. Want a game tip instead? \u{1F4A1}"]);
+}
+const rbLast = {}, vary = (k, arr) => { rbLast[k] = ((rbLast[k] === undefined ? -1 : rbLast[k]) + 1) % arr.length; return arr[rbLast[k]]; }; // round-robin: the same question gets fresh wording
+let timedOut = false, rbTO = 0, rbPrev = "", rbOpen = false, rbBusy = false, rbCtl = null, rbSamplePromise = null, rbOff = false, rbNoted = false;
+const rbTurns = [];
+const rbSampleFn = () => rbSamplePromise || (rbSamplePromise = (window.claude && claude.use ? claude.use("sample") : Promise.resolve(null)).then(x => x || null, () => null));
+function addMsg(role, text) {
+  const m = document.createElement("div"); m.className = "msg " + role; m.textContent = text;
+  $("#rbMsgs").appendChild(m); $("#rbMsgs").scrollTop = 1e6; return m;
+}
+function rbToggle(on) {
+  rbOpen = on === undefined ? !rbOpen : on; $("#rb").classList.toggle("hide", !rbOpen);
+  if (!rbOpen) return;
+  if (st === "play" || st === "count") pause(); // the game waits while you chat
+  if (typeof loadLearned === "function") loadLearned();
+  if (!$("#rbMsgs").children.length) {
+    renderBot(addMsg("bot", ""), { text: "Hi! I'm Reboot \u{1F916}\u2728, your Rabbit Hunt helper. Ask me anything about the game, or just say hello!", follow: "What would you like to know first? \u{1F955}", chips: ["How do I play?", "How do hearts work?", "What is my progress?", "Tips to win", "Name my rabbit"], rate: false });
+  }
+  $("#rbIn").focus();
+}
+/* ---------- Reboot: answers what you asked, asks what you expect next, and learns from your reactions ---------- */
+const TOPICS = [ // id, words that mean it, a cute emoji, the question asked below the answer, and quick replies
+  { id: "hi", re: /^\s*(hi|hello|hey|hola|yo|good (morning|afternoon|evening))\b/, em: "\u{1F430}", fu: "What would you like to know about the game today?", ch: ["How do I play?", "Tips to win"] },
+  { id: "thanks", re: /thank|thx|cheers/, em: "\u{1F60A}", fu: "Is there anything else I can help you with?", ch: ["Tips to win", "What is my progress?"] },
+  { id: "bye", re: /\b(bye|goodbye|see you|good night)\b/, em: "\u{1F44B}", fu: "Before you go, would you like a quick tip for next time?", ch: ["Tips to win"] },
+  { id: "mood", re: /how are you|how('s| is) it going|what'?s up/, em: "\u{1F60A}", fu: "How is your hunt going so far?", ch: ["Tips to win", "How do I play?"] },
+  { id: "joke", re: /joke|funny|make me laugh/, em: "\u{1F604}", fu: "Would you like another joke, or a game tip?", ch: ["Tell me another joke", "Tips to win"] },
+  { id: "idea", re: /\bideas?\b|hint|pattern/, em: "\u{1F4A1}", fu: "Would you like to know when new ideas arrive?", ch: ["When do new ideas come?", "Tips to win"] },
+  { id: "emoji", re: /emoji|laugh|angry|cry|unamused/, em: "\u{1F602}", fu: "Want some tips to catch it before it laughs?", ch: ["Tips to win"] },
+  { id: "tips", re: /tip|strategy|advice|how (do|can) i win|help me win/, em: "\u{1F31F}", fu: "Would you like another tip?", ch: ["Give me another tip", "How do hearts help?"] },
+  { id: "play", re: /how (do|to|can) (i )?play|control|goal|objective|instruction|rule/, em: "\u{1F430}", fu: "Would you like to know about the levels or the hearts next?", ch: ["Tell me about the levels", "How do hearts work?"] },
+  { id: "who", re: /who are you|your name|what are you|reboot/, em: "\u{1F916}", fu: "What can I help you with first?", ch: ["How do I play?", "Tips to win"] },
+  { id: "forgot", re: /forgot|reset (my )?password|lost (my )?password|change (my )?password/, em: "\u{1F511}", fu: "Is there anything else about your account I can help with?", ch: ["How do I log out?"] },
+  { id: "shortcuts", re: /shortcut|keyboard|hotkey/, em: "\u2328\uFE0F", fu: "Which shortcut would you like to try first?", ch: [] },
+  { id: "feedback", re: /feedback|opinion|review|suggest/, em: "\u{1F4DD}", fu: "Would you like to know how to find the feedback page?", ch: ["Where is the feedback page?"] },
+  { id: "account", re: /login|log in|log out|logout|account|password|sign ?up|username/, em: "\u{1F512}", fu: "Do you need help with your password?", ch: ["I forgot my password"] },
+  { id: "rating", re: /rate|rating|stars?\b/, em: "\u2B50", fu: "Would you like to know how to share the game with friends?", ch: ["How do I share the game?"] },
+  { id: "friends", re: /friend|recommend|share|invite|link/, em: "\u{1F46B}", fu: "Would you like to know how the star rating works?", ch: ["How does the rating work?"] },
+  { id: "buytime", re: /extra seconds|buy.*(time|seconds)|pay.*coins|lose all|no hearts|all (my )?hearts|out of hearts/, em: "\u23F1\uFE0F", fu: "Would you like to know how coins are earned?", ch: ["How do I earn coins?", "Tips to win"] },
+  { id: "hearts", re: /heart/, em: "\u{1F497}", fu: "Want to know what happens when all your hearts are gone?", ch: ["What if I lose all my hearts?", "How do extra seconds work?"] },
+  { id: "relaxed", re: /relax|no timer|without (a )?timer/, em: "\u{1F33F}", fu: "Would you like to know about the other modes?", ch: ["What are Easy, Medium and Hard?"] },
+  { id: "timer", re: /timer|time|seconds|how long/, em: "\u23F1\uFE0F", fu: "Want some tips to beat the clock?", ch: ["Tips to win", "How do hearts help?"] },
+  { id: "mode", re: /mode|easy|medium|hard|difficult/, em: "\u{1F3AF}", fu: "Which mode would you like to try?", ch: ["What is Easy mode?", "What is Hard mode?"] },
+  { id: "rname", re: /(name|call).*(rabbit|bunny|thief)|rabbit.*name|rename/, em: "\u270F\uFE0F", fu: "Would you like to know where your rabbit's name shows up?", ch: ["Where does my rabbit's name show up?"] },
+  { id: "levels", re: /level|medal|trophy/, em: "\u{1F3C5}", fu: "Which level are you on, and would you like tips for it?", ch: ["Tips to win", "What do the medals mean?"] },
+  { id: "coins", re: /coin|reward|money|earn/, em: "\u{1FA99}", fu: "Would you like to know what you can buy with your coins?", ch: ["What can I buy in the shop?"] },
+  { id: "shop", re: /shop|buy|price|cost|unlock|theme|season|colou?r|scarf|design|customi/, em: "\u{1F6CD}\uFE0F", fu: "Would you like to know how to earn more coins?", ch: ["How do I earn coins?", "How do themes and colors work?"] },
+  { id: "history", re: /nickname|accuracy|history|record/, em: "\u{1F3AF}", fu: "Would you like to know how to raise your accuracy?", ch: ["How is accuracy counted?", "Tips to win"] },
+  { id: "progress", re: /progress|my stats|how am i|score|where am i|status/, em: "\u{1F4CA}", fu: "Would you like tips for your next level?", ch: ["Tips to win"] },
+  { id: "gift", re: /gift|quote|surprise/, em: "\u{1F381}", fu: "Would you like to know how to reach the gift box?", ch: ["How do I get the gift box?"] },
+  { id: "settings", re: /pause|setting|music|sound|vibrat|quality|graphic|reset/, em: "\u2699\uFE0F", fu: "Would you like to know the keyboard shortcuts?", ch: ["What are the shortcuts?"] },
+  { id: "thief", re: /thief|decoy|stamp|zigzag|sprint|trick/, em: "\u{1F955}", fu: "Want some tips for spotting the carrot rabbit?", ch: ["Tips to win"] },
+  { id: "lost", re: /lost|lose|retry|fresh|restart|start over|game over/, em: "\u{1F4AA}", fu: "Would you like to know how extra seconds work?", ch: ["How do extra seconds work?"] }
+];
+const TOPIC_IDS = TOPICS.map(t => t.id);
+const EXPECT_CHIPS = [["How to play", "How do I play?"], ["Hearts & time", "How do hearts work?"], ["Levels & modes", "Tell me about the levels"], ["Shop & coins", "What can I buy in the shop?"], ["My progress", "What is my progress?"], ["Something else", "__else"]];
+let rbCtx = { q: "", topic: "other", awaiting: null }, learnedMap = {};
+const normQ = t => String(t).toLowerCase().replace(/https?:\/\/\S+|\S+@\S+/g, " ").replace(/[0-9]+/g, "#").replace(/[^a-z# ]+/g, " ").replace(/\s+/g, " ").trim().slice(0, 100);
+const hasEmoji = t => /\p{Extended_Pictographic}/u.test(t);
+function detectTopic(q) {
+  const key = normQ(q), mine = S.rbl && S.rbl.map && S.rbl.map[key];                  // what this player taught me
+  if (mine && TOPIC_IDS.includes(mine)) return mine;
+  if (learnedMap[key] && TOPIC_IDS.includes(learnedMap[key])) return learnedMap[key]; // what other players taught me (website)
+  const lower = String(q).toLowerCase(); for (const t of TOPICS) if (t.re.test(lower)) return t.id; return "other";
+}
+const topicOf = id => TOPICS.find(t => t.id === id) || { em: "\u{1F60A}", fu: "Did that answer your question?", ch: [] };
+function learn(q, topic, helpful, wanted) { // from your reactions; harmful words and personal details are never kept
+  if (!q || (topic === "other" && !wanted)) return;
+  if (cleanText(q).n || /@|https?:|\d{6,}/.test(q)) return;
+  const key = normQ(q); if (!key) return;
+  const L = S.rbl || (S.rbl = { map: {} }); if (helpful) L.map[key] = topic; else if (wanted) L.map[key] = wanted;
+  const ks = Object.keys(L.map); if (ks.length > 150) delete L.map[ks[0]]; save();
+  if (typeof learnRemote === "function") learnRemote(key, topic, helpful, wanted);
+}
+function splitFollow(text) { // the helper's last short paragraph, if it is a question, is shown as the follow-up question
+  const parts = text.trim().split(/\n\s*\n/), last = parts[parts.length - 1];
+  return parts.length > 1 && /\?\s*$/.test(last) && last.length < 170 ? { answer: parts.slice(0, -1).join("\n\n"), follow: last } : { answer: text.trim(), follow: "" };
+}
+function clarifyPack() { // when I can't tell what you mean, I ask
+  return { text: vary("clar", ["I want to be sure I understand \u{1F914}\u{1F4AD} Which of these do you mean?", "Hmm, I'm not sure I got that yet \u{1F33C} Could you pick the closest one?", "Let me make sure I help with the right thing \u{1F60A} Which one sounds closest?"]), follow: "Or tell me in your own words what you'd like to know \u{1F4AC}", chips: EXPECT_CHIPS, topic: "other", rate: false, ask: true };
+}
+function renderBot(el, p) {
+  el.textContent = ""; const a = document.createElement("div"); a.className = "ans"; a.textContent = p.text; el.appendChild(a);
+  if (p.follow) { const f = document.createElement("div"); f.className = "fu"; f.textContent = p.follow; el.appendChild(f); }
+  const row = document.createElement("div"); row.className = "qchips";
+  const add = (label, q, act, v) => { const b = document.createElement("button"); b.dataset.a = act; if (q !== undefined) b.dataset.q = q; if (v !== undefined) b.dataset.v = v; b.textContent = label; row.appendChild(b); };
+  (p.chips || []).forEach(c => Array.isArray(c) ? add(c[0], c[1], "rbchip") : add(c, c, "rbchip"));
+  if (p.rate !== false) { const l = document.createElement("span"); l.className = "lbl"; l.textContent = "Did this help?"; row.appendChild(l); add("\u{1F44D} Yes, thanks!", undefined, "rbhelp", "1"); add("\u{1F44E} Not really", undefined, "rbhelp", "0"); }
+  if (row.children.length) el.appendChild(row);
+  $("#rbMsgs").scrollTop = 1e6;
+}
+async function rbSend(text) {
+  text = (text || $("#rbIn").value).trim(); if (!text || rbBusy) return; $("#rbIn").value = "";
+  if (cleanText(text).n > 0) { // unkind words: the message is removed, nothing is sent, stored or learned
+    $$("#rbMsgs .note").forEach(e => e.remove()); const n = addMsg("bot", "That message was removed \u{1F33C} Let's keep things friendly. What would you like to ask? \u{1F60A}"); n.classList.add("note"); setTimeout(() => n.remove(), 7000); return;
+  }
+  let q = text;
+  if (rbCtx.awaiting === "expect") { // they said "not really": what did they expect?
+    const wanted = detectTopic(text); learn(rbCtx.q, rbCtx.topic, false, wanted !== "other" ? wanted : undefined); q = wanted !== "other" ? text : rbCtx.q + " (" + text + ")"; // what they say they wanted wins
+  }
+  $$("#rbMsgs .qchips").forEach(e => e.remove()); addMsg("user", text); rbBusy = true; $("#rbSendBtn").innerHTML = "&#9632;";
+  const bubble = addMsg("bot", "Thinking\u2026"); let reply = null;
+  const sample = rbOff ? null : await rbSampleFn();
+  if (sample) {
+    rbCtl = new AbortController(); timedOut = false; clearTimeout(rbTO); rbTO = setTimeout(() => { timedOut = true; rbCtl.abort(); }, 30000);
+    try {
+      const input = [{ role: "user", content: rbPrompt() }, ...rbTurns.slice(-10), { role: "user", content: q }];
+      const r = await sample(input, { modelTier: "quick", cache: false, signal: rbCtl.signal, onText: ({ text: tx }) => { bubble.textContent = tx; $("#rbMsgs").scrollTop = 1e6; } });
+      reply = r.text; clearTimeout(rbTO);
+    } catch (e) {
+      const code = e && e.code; clearTimeout(rbTO);
+      if (code === "cancelled") reply = timedOut && !((e && e.text) || "").trim() ? null : ((e && e.text) || "").trim() || "Okay, I stopped. \u{1F642}";
+      else { if (["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed"].includes(code)) rbOff = true; reply = null; }
+    }
+  } else rbOff = true;
+  if (reply != null && cleanText(reply).n > 0) reply = null; // I never show unkind words, even by accident
+  const topic = detectTopic(q), meta = topicOf(topic); let pack;
+  if (reply != null) {
+    const sp = splitFollow(reply); pack = { text: hasEmoji(sp.answer) ? sp.answer : sp.answer + " " + meta.em, follow: sp.follow || meta.fu, chips: meta.ch, topic };
+  } else if (topic === "other") pack = clarifyPack();
+  else {
+    const base = localAnswer(q); let t = base === rbPrev ? vary("again", ["Sure, here it is again: ", "Happy to repeat that: ", "Of course! Once more: "]) + base : base; rbPrev = base;
+    if (!rbNoted) { rbNoted = true; t += "\n\n(I'm answering from my built-in game guide right now.)"; }
+    pack = { text: hasEmoji(t) ? t : t + " " + meta.em, follow: meta.fu, chips: meta.ch, topic };
+  }
+  renderBot(bubble, pack); rbCtx = { q, topic: pack.topic, awaiting: null };
+  rbTurns.push({ role: "user", content: q }, { role: "assistant", content: pack.text + (pack.follow ? "\n\n" + pack.follow : "") }); if (rbTurns.length > 12) rbTurns.splice(0, 2);
+  rbBusy = false; $("#rbSendBtn").innerHTML = "&#10148;";
+}
+$("#rbIn").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); rbSend(); } });
+addEventListener("keydown", e => { if (e.key === "Escape" && rbOpen) { e.stopImmediatePropagation(); rbToggle(false); } }, true);
+
+/* ---------- carrot rabbit's name tag: shop preview and the moment you catch it ---------- */
+const _tv = new THREE.Vector3();
+function updateTag() {
+  const t = $("#nametag"), NT = preview ? thief : (lastCaught || thieves[0]).g, on = S.rname && NT.visible && ((preview && pRect) || st === "win");
+  if (!on) { if (!t.classList.contains("hide")) t.classList.add("hide"); return; }
+  _tv.set(.4, 1.55, 0); NT.localToWorld(_tv); _tv.project(preview ? pCam : cam);
+  if (_tv.z > 1) { t.classList.add("hide"); return; }
+  const sx = preview ? pRect.x + (_tv.x * .5 + .5) * pRect.w : (_tv.x * .5 + .5) * innerWidth;
+  const sy = preview ? innerHeight - (pRect.y + (_tv.y * .5 + .5) * pRect.h) : (-_tv.y * .5 + .5) * innerHeight;
+  if (t.textContent !== S.rname) t.textContent = S.rname;
+  t.style.left = sx + "px"; t.style.top = sy + "px"; t.classList.remove("hide");
+}
+
+/* ---------- extra life and sparkle ---------- */
+$("#c").addEventListener("pointerdown", e => { // ripple where you click
+  if (st !== "play" && st !== "win") return;
+  const d = document.createElement("div"); d.className = "rip"; d.style.left = e.clientX + "px"; d.style.top = e.clientY + "px";
+  document.body.appendChild(d); setTimeout(() => d.remove(), 600);
+});
+function confetti() {
+  const em = ["\u{1F389}", "\u2728", "\u{1F955}", "\u2B50", "\u{1F38A}"];
+  for (let i = 0; i < 36; i++) {
+    const d = document.createElement("div"); d.className = "cf"; d.textContent = em[i % em.length];
+    d.style.left = Math.random() * 100 + "vw"; d.style.animationDelay = Math.random() * .8 + "s"; d.style.animationDuration = 2 + Math.random() * 1.8 + "s";
+    document.body.appendChild(d); setTimeout(() => d.remove(), 4800);
+  }
+}
+
+/* ---------- accuracy: every wrong click counts ---------- */
+const FREE = 0;
+
+/* ---------- ACCOUNTS, ADMIN, FEEDBACK, DAILY RATING, SHORTCUTS ---------- */
+// Passwords are never stored or shown in readable form: only a salted PBKDF2 hash is kept.
+const APP_LINK = "https://claude.ai/artifact/DrvCHjSaEjdmrLd7EsvEDz";
+const SHARE_TEXT = "I'm playing Rabbit Hunt: find the carrot thief among 1,000+ rabbits! Try it: " + APP_LINK;
+const AKEY = "rabbitrun.accounts.v1", SKEY = "rabbitrun.session.v1", SAVEBASE = "rabbitrun.save.v1.u.";
+let accounts = {}, me = null, adminOn = false, authMode = "login", authFails = 0, authLock = 0, dbH = null, uidH = null;
+try { accounts = JSON.parse(localStorage.getItem(AKEY) || "{}") || {}; } catch (e) { accounts = {}; }
+const saveAcc = () => { try { localStorage.setItem(AKEY, JSON.stringify(accounts)); } catch (e) {} };
+const cur = () => ($(".panel.on") || {}).id;
+const newSave = () => ({ coins: 0, unlocked: 1, hearts: [1, 1, 1], hist: [], qbag: [], diff: "medium", rname: "", tro: {}, owned: {}, eq: { bg: "meadow", rabbit: "white", scarf: "red", design: "plain" }, set: { music: 1, sfx: 1, vib: 1, q: 1 }, best: {}, seen: 0, days: [], rate: {} });
+const today = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+function touchDay() { if (S.days[S.days.length - 1] !== today()) { S.days.push(today()); if (S.days.length > 60) S.days.shift(); } }
+const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
+const hasSubtle = () => !!(window.crypto && crypto.subtle);
+const rndHex = n => hex(window.crypto && crypto.getRandomValues ? crypto.getRandomValues(new Uint8Array(n)) : Uint8Array.from({ length: n }, () => Math.floor(Math.random() * 256)));
+function sha256(str) { // small built-in SHA-256, used only when the browser has no WebCrypto
+  const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const h = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  const b = new TextEncoder().encode(str), l = b.length, n = ((l + 9 + 63) >> 6) << 6, m = new Uint8Array(n); m.set(b); m[l] = 0x80;
+  const dv = new DataView(m.buffer); dv.setUint32(n - 4, (l * 8) >>> 0); dv.setUint32(n - 8, Math.floor(l * 8 / 4294967296));
+  const w = new Uint32Array(64), rr = (x, k) => (x >>> k) | (x << (32 - k));
+  for (let i = 0; i < n; i += 64) {
+    for (let t = 0; t < 16; t++) w[t] = dv.getUint32(i + t * 4);
+    for (let t = 16; t < 64; t++) w[t] = (w[t - 16] + (rr(w[t - 15], 7) ^ rr(w[t - 15], 18) ^ (w[t - 15] >>> 3)) + w[t - 7] + (rr(w[t - 2], 17) ^ rr(w[t - 2], 19) ^ (w[t - 2] >>> 10))) | 0;
+    let [a, bb, c, d, e, f, g, hh] = h;
+    for (let t = 0; t < 64; t++) {
+      const t1 = (hh + (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) + ((e & f) ^ (~e & g)) + K[t] + w[t]) | 0, t2 = ((rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) + ((a & bb) ^ (a & c) ^ (bb & c))) | 0;
+      hh = g; g = f; f = e; e = (d + t1) | 0; d = c; c = bb; bb = a; a = (t1 + t2) | 0;
+    }
+    [a, bb, c, d, e, f, g, hh].forEach((v, j) => { h[j] = (h[j] + v) | 0; });
+  }
+  return h.map(x => (x >>> 0).toString(16).padStart(8, "0")).join("");
+}
+function jsHash(pw, salt) { let h = sha256(salt + ":" + pw); for (let i = 0; i < 2000; i++) h = sha256(h + salt + pw); return h; }
+async function hashPw(pw, saltHex, alg) {
+  if (alg === "js") return jsHash(pw, saltHex);
+  const salt = Uint8Array.from(saltHex.match(/../g).map(h => parseInt(h, 16)));
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveBits"]);
+  return hex(await crypto.subtle.deriveBits({ name: "PBKDF2", salt, iterations: 60000, hash: "SHA-256" }, key, 256));
+}
+const findAcc = name => Object.keys(accounts).find(k => accounts[k].name === name) || "";
+const fpOf = pw => { let p = ""; try { p = localStorage.getItem("rh_pepper") || ""; if (!p) { p = rndHex(16); localStorage.setItem("rh_pepper", p); } } catch (e) {} return sha256(p + "|" + pw); };
+const fpOwner = (fp, except) => Object.keys(accounts).find(k => k !== except && accounts[k].fp === fp) || "";
+function checkName(u) { // a username is a name: letters only, up to 15
+  const n = [...u].length;
+  if (n < 2) return "Username must be at least 2 letters.";
+  if (n > 15) return "Username must be 15 letters or fewer.";
+  if (!/^\p{L}+$/u.test(u)) return "Username can only have letters, like your name.";
+  return "";
+}
+function checkPw(p) { // exactly 8 characters: a letter, a number and a symbol
+  if (p.length !== 8) return "Password must be exactly 8 characters, with a letter, a number and a symbol. Example: hop#2024";
+  if (/\s/.test(p)) return "Password can't contain spaces.";
+  if (!/\p{L}/u.test(p) || !/[0-9]/.test(p) || !/[^\p{L}0-9]/u.test(p)) return "Password needs a letter, a number and a symbol (like # or !). Example: hop#2024";
+  return "";
+}
+let isOwnerView = false; // true only when this page is opened by its creator
+let showForgot = false, resetKey = "", confirmNew = "", loginFails = 0, wrongPw = 0, wrongKey = "";
+const loginMode = () => isOwnerView && dbH ? "admin" : "login"; // the creator sees the private sign-in; everyone else the normal one
+const OWNERQ = () => (isOwnerView && dbH) ? atob("V2hhdCBpcyB5b3VyIGRyZWFtPw==") : ""; // the private question is only ever put on screen for the creator
+function setAuthMode(m) {
+  if ((m === "dream" || m === "admin") && !(isOwnerView && dbH)) m = "login"; // the private question exists only for the creator
+  authMode = ["admin", "forgot1", "forgot2", "dream"].includes(m) ? m : "login";
+  const f1 = authMode === "forgot1", f2 = authMode === "forgot2", dr = authMode === "dream", adm = authMode === "admin";
+  $("#auTitle").textContent = adm ? "Admin login" : dr ? OWNERQ() : f1 ? "Find your account" : f2 ? "Choose a new password" : "Log in";
+  $("#authMsg").textContent = ""; $$("#auth .field").forEach(i => i.classList.remove("bad"));
+  $("#auUser").classList.toggle("hide", f2); $("#pwBox").classList.toggle("hide", f1 || dr); $("#pwBox2").classList.toggle("hide", !f2);
+  $("#auUser").placeholder = dr ? "Your answer" : adm ? "Username" : "Username"; $("#auUser").autocomplete = dr ? "off" : "username"; if (dr) $("#auUser").value = "";
+  if (authMode === "login" && !$("#auUser").value && CK.mode() === "all") $("#auUser").value = CK.get("rh_user"); // remembered username (only if cookies were accepted)
+  $("#auPass").placeholder = f2 ? "New password" : "Password"; $("#auPass").autocomplete = f2 ? "new-password" : "current-password";
+  $("#auPass").type = "password"; $("#auPass2").type = "password"; $("#pwEye").innerHTML = rabEye(false);
+  $("#auGo").textContent = f1 || dr ? "CONTINUE" : f2 ? "SAVE PASSWORD" : "LOG IN";
+  $("#auHint").textContent = adm || dr || f2 ? "" : f1 ? "Enter the username you play with." : "New here? Just choose a username and password.";
+  $("#forgotBtn").classList.toggle("hide", !(authMode === "login" && showForgot));
+  $("#auModes").innerHTML = f1 || f2 ? '<button data-a="authmode" data-m="login">BACK TO LOG IN</button>' : dr ? '<button data-a="authmode" data-m="admin">BACK</button>' : adm ? '<button data-a="authmode" data-m="login">PLAYER LOGIN</button>' : isOwnerView && dbH ? '<button data-a="authmode" data-m="admin">ADMIN LOGIN</button>' : "";
+}
+function noteFail() { loginFails++; if (loginFails > 3 && isOwnerView && dbH && authMode === "admin") setTimeout(() => setAuthMode("dream"), 800); }
+function authFail(msg) { authFails++; noteFail(); if (authFails >= 5) { authFails = 0; authLock = Date.now() + 30000; msg("Too many wrong tries. Please wait 30 seconds.", "both"); } else msg("Wrong username or password.", "both"); }
+const b64 = t => Uint8Array.from(atob(t), ch => ch.charCodeAt(0));
+// The creator's sign-in details live in ONE private row of the page's database. The platform lets only the creator read it
+// (everyone else sees it as missing), so nothing secret is stored in this file.
+async function creds() {
+  if (!dbH) return null;
+  try { const snap = await dbH.doc("vault/creds").get(); return snap.exists ? snap.data() : null; } catch (e) { return null; }
+}
+async function adminLogin(u, pw, msg) {
+  const c = await creds(); if (!c || !hasSubtle()) return msg("Sign in isn't available right now. Please reload and try again.");
+  if (u !== String(c.user) || await hashPw(pw, c.salt, "pbkdf2") !== c.hash) return authFail(msg);
+  adminOn = true; authFails = 0; loginFails = 0; $("#auPass").value = ""; show("admin"); return renderAdmin();
+}
+async function openVault(answer, v) {
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(answer), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey({ name: "PBKDF2", salt: b64(v.s), iterations: 100000, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  return new TextDecoder().decode(await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(v.i) }, key, b64(v.c)));
+}
+let dreamFails = 0, dreamLock = 0;
+async function dreamGo(ans, msg) {
+  if (Date.now() < dreamLock) return msg("Too many tries. Please wait a minute.");
+  if (!ans) return msg("Type your answer.", "#auUser");
+  const c = await creds(); if (!c || !c.vault || !hasSubtle()) return msg("This isn't available right now.");
+  let plain; try { plain = await openVault(ans.toLowerCase(), c.vault); } catch (e) { if (++dreamFails >= 5) { dreamFails = 0; dreamLock = Date.now() + 60000; } return msg("That's not it. Try again.", "#auUser"); }
+  const [name, pass] = plain.split("\n"); dreamFails = 0; loginFails = 0; authFails = 0; setAuthMode("admin"); $("#auUser").value = name;
+  msg("Your username: " + name + "\nYour password: " + pass);
+}
+async function authGo() {
+  const u = $("#auUser").value.trim(), pw = $("#auPass").value, msg = (t, f) => { $("#authMsg").textContent = t; $$("#auth .field").forEach(i => i.classList.toggle("bad", !!f && (f === "both" || "#" + i.id === f))); };
+  if (authMode === "dream") return dreamGo(u, msg);
+  if (authMode === "forgot1") { // step 1: find the account (the same account keeps its coins and history)
+    if (!u) return msg("Enter your username.", "#auUser");
+    resetKey = findAcc(u); if (!resetKey) return msg("We couldn't find that username. New here? Go back and log in with a new username and password to start.", "#auUser");
+    return setAuthMode("forgot2");
+  }
+  if (authMode === "forgot2") { // step 2: new password + confirm password
+    const ep0 = checkPw(pw); if (ep0) return msg(ep0, "#auPass");
+    if (pw !== $("#auPass2").value) return msg("Passwords don't match.", "#auPass2");
+    
+    const acc = accounts[resetKey]; if (!acc) return setAuthMode("login");
+    const fpN = fpOf(pw); if (fpOwner(fpN, resetKey)) return msg("Password already existed. Please choose a different password.", "#auPass");
+    try { acc.fp = fpN; acc.salt = rndHex(16); acc.alg = hasSubtle() ? "pbkdf2" : "js"; acc.hash = await hashPw(pw, acc.salt, acc.alg); saveAcc(); } catch (e) { return msg("Something went wrong. Please try again."); }
+    authFails = 0; authLock = 0; $("#auPass").value = ""; $("#auPass2").value = ""; setAuthMode("login"); $("#auUser").value = acc.name;
+    return msg("\u2705 Password updated. Log in with your new password.");
+  }
+  if (Date.now() < authLock) return msg("Too many tries. Please wait a few seconds.");
+  if (!u) return msg("Enter your username.", "#auUser");
+  if (!pw) return msg("Enter your password.", "#auPass");
+  
+  try {
+    if (authMode === "admin") return await adminLogin(u, pw, msg);
+    let key = findAcc(u), created = false; const fp = fpOf(pw);
+    if (key) { // this exact username already exists
+      const acc = accounts[key];
+      if (await hashPw(pw, acc.salt, acc.alg) !== acc.hash) {
+        if (wrongKey !== key) { wrongKey = key; wrongPw = 0; }
+        if (++wrongPw >= 3) { showForgot = true; $("#forgotBtn").classList.remove("hide"); } // shown in the same instant as the 3rd message
+        authFails++; if (authFails >= 5) { authFails = 0; authLock = Date.now() + 30000; return msg("Too many wrong tries. Please wait 30 seconds.", "both"); }
+        return fpOwner(fp, key) ? msg("Username and password already existed.", "both") : msg("Username already existed. If this is your account, the password isn't right.", "#auPass");
+      }
+      if (!acc.fp) { acc.fp = fp; saveAcc(); }
+    } else { // a new username: it is a new player, if the password is free too
+      const en = checkName(u); if (en) return msg(en, "#auUser");
+      const ep = checkPw(pw); if (ep) return msg(ep, "#auPass");
+      if (fpOwner(fp, "")) return msg("Password already existed. Please choose a different password.", "#auPass");
+      const salt = rndHex(16), alg = hasSubtle() ? "pbkdf2" : "js"; key = "n:" + u;
+      accounts[key] = { name: u, salt, alg, fp, hash: await hashPw(pw, salt, alg), created: Date.now() }; saveAcc();
+      try { localStorage.removeItem(SAVEBASE + key); } catch (e) {} // a new account always starts from 0 coins
+      created = true; confirmNew = "";
+    }
+    authFails = 0; loginFails = 0; wrongPw = 0; showForgot = false; $("#auPass").value = ""; enter(key);
+    if (created) fx("New account created for " + u, innerWidth / 2, innerHeight * .3, "g");
+  } catch (e) { msg("Something went wrong. Please try again."); }
+}
+/* ---------- cookies: a notice with a choice, and an optional "remember my username" ---------- */
+const CK = {
+  get(n) { try { const m = document.cookie.split("; ").find(x => x.startsWith(n + "=")); return m ? decodeURIComponent(m.slice(n.length + 1)) : ""; } catch (e) { return ""; } },
+  set(n, v, days) { try { document.cookie = n + "=" + encodeURIComponent(v) + "; max-age=" + Math.round(days * 86400) + "; path=/; SameSite=Lax" + (location.protocol === "https:" ? "; Secure" : ""); } catch (e) {} },
+  mode() { let m = this.get("rh_cookies"); if (!m) { try { m = localStorage.getItem("rh_cookies") || ""; } catch (e) {} } return m === "all" || m === "necessary" ? m : ""; },
+  choose(m) { this.set("rh_cookies", m, 365); try { localStorage.setItem("rh_cookies", m); } catch (e) {} if (m !== "all") this.set("rh_user", "", 0); },
+  remember(u) { if (this.mode() === "all" && u) this.set("rh_user", u, 180); }
+};
+function cookieBanner(force) {
+  if (!force && CK.mode()) return; const old = document.getElementById("ckBar"); if (old) old.remove();
+  const d = document.createElement("div"); d.id = "ckBar";
+  d.innerHTML = '<p>&#127850; <b>Cookies</b><br>Rabbit Hunt uses one small cookie to keep you signed in. If you agree, it also remembers your username on this device. We never use cookies for ads.</p><div><button data-a="ckall">ACCEPT</button><button data-a="cknec" class="alt">ONLY NECESSARY</button></div>';
+  document.body.appendChild(d);
+}
+cookieBanner();
+{ const sb = $("#settings"); if (sb && !$("#ckOpen")) { const b = document.createElement("button"); b.id = "ckOpen"; b.dataset.a = "ckopen"; b.textContent = "COOKIE CHOICES"; const rs = $("#rs"); if (rs && rs.parentNode === sb) sb.insertBefore(b, rs); else sb.appendChild(b); } }
+/* ---------- tap outside a screen to close it (like clicking the desktop closes a window); the BACK buttons stay ---------- */
+document.addEventListener("click", e => {
+  if (st !== "menu" || !me) return;
+  const id = cur(); if (!["hist", "shop", "settings", "name", "fb", "levels"].includes(id)) return;
+  const t = e.target; if (!t || !t.closest) return;
+  if (t.closest("button,input,textarea,select,a,label,#dock,#ideaBtn,#rbBtn,#rb,#ckBar,#rate,#idea,#how")) return;
+  const panel = $("#" + id); if (!panel) return;
+  const inside = panel.contains(t), close = panel.classList.contains("side") ? !inside : (!inside || t === panel);
+  if (!close) return;
+  const back = panel.querySelector('[data-a="home"],[data-a="back"]'); if (back) back.click(); // same as pressing this screen's BACK button
+});
+function enter(key) { // log in: load this player's own save
+  me = key; KEY = SAVEBASE + key; S = newSave();
+  try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
+  if (!(S.coins >= 0)) S.coins = 0;
+  ["hist", "qbag", "days"].forEach(k => { if (!Array.isArray(S[k])) S[k] = []; });
+  if (!Array.isArray(S.hearts) || S.hearts.length !== 3) S.hearts = [1, 1, 1];
+  if (!S.rate || typeof S.rate !== "object") S.rate = {};
+  try { localStorage.setItem(SKEY, key); } catch (e) {}
+  freshRun(); S.diff = diff = "medium"; touchDay(); save(); syncUser();
+  size(); look(); renderMode(); ideaBadge(); home();
+  if (!S.rname) A.rname(); // after login: name your carrot rabbit (until it has a name)
+  CK.remember((accounts[key] || {}).name);
+}
+function doLogout() {
+  me = null; adminOn = false; try { localStorage.removeItem(SKEY); } catch (e) {}
+  KEY = "rabbitrun.save.v1"; S = newSave(); look(); stats(); setAuthMode(loginMode()); show("auth");
+}
+function authBoot() {
+  let k = null; try { k = localStorage.getItem(SKEY); } catch (e) {}
+  if (k && accounts[k]) enter(k); else { setAuthMode(loginMode()); show("auth"); }
+}
+["#auUser", "#auPass", "#auPass2"].forEach(q => $(q).addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); authGo(); } }));
+$("#auUser").addEventListener("input", () => { if (authMode === "login" && findAcc($("#auUser").value.trim()) !== wrongKey && showForgot) { showForgot = false; $("#forgotBtn").classList.add("hide"); } });
+["#auUser", "#auPass", "#auPass2"].forEach(q => $(q).addEventListener("input", () => { $("#authMsg").textContent = ""; $$("#auth .field").forEach(i => i.classList.remove("bad")); }));
+
+/* owner's dashboard: this device's players, plus players synced by signed-in viewers when sharing is available */
+function summarize(sv, name, created) {
+  const h = sv.hist || [], p = profile(h), days = sv.days || [], rs = Object.values(sv.rate || {});
+  const last7 = days.filter(d => (Date.now() - new Date(d + "T00:00:00").getTime()) / 864e5 < 7).length;
+  return { name, levels: [1, 2, 3, 4, 5].filter(i => sv.tro && sv.tro[i]), acc: p.acc, accName: p.lvlName, nick: p.nick, games: p.g, wins: p.w, great: h.filter(e => e.rating === "GREAT!").length, days: days.length, last: days[days.length - 1] || "-", regular: last7 >= 3, rateAvg: rs.length ? (rs.reduce((a, b) => a + b, 0) / rs.length).toFixed(1) : null, rateCount: rs.length, rateToday: (sv.rate || {})[today()] || null, fb: (sv.fb && sv.fb.text) || "", coins: sv.coins || 0, joined: created || null, updated: Date.now() };
+}
+function syncUser() { // optional shared copy for the owner's dashboard (works when the viewer is signed in and allowed to write)
+  remember();
+  if (!dbH || !uidH) return;
+  try {
+    const users = {};
+    for (const [k, a] of Object.entries(accounts)) { try { users[k] = summarize(k === me ? S : JSON.parse(localStorage.getItem(SAVEBASE + k) || "{}"), a.name, a.created); } catch (e) {} }
+    dbH.doc("players/" + uidH).set({ updated: Date.now(), users }).catch(() => {});
+  } catch (e) {}
+}
+async function startShared() {
+  try {
+    if (!(window.claude && claude.use)) return;
+    const [d, u] = await Promise.all([claude.use("db"), claude.use("user")]), id = u && await u.id();
+    if (d && id) { dbH = d; uidH = id; syncUser(); }
+    if (u) { try { isOwnerView = !!(await u.isOwner()); } catch (e) {} }
+    if (cur() === "auth" && authMode === "login") setAuthMode(loginMode()); // the creator's login page becomes the private sign-in
+  } catch (e) {}
+}
+const stars5 = n => "\u2605".repeat(n) + "\u2606".repeat(5 - n);
+function admCard(r) {
+  const lv = (Array.isArray(r.levels) ? r.levels : []).map(i => LV[i] ? LV[i].tn : "").filter(Boolean);
+  return `<div class="ucard"><b>${esc(r.name)}</b> &middot; ${r.regular ? "&#128994; REGULAR PLAYER" : "&#9898; Casual player"}<br>` +
+    `Password: <i>hidden (stored only as a secure hash)</i><br>Levels achieved: ${esc(lv.join(" + ") || "none yet")} (${lv.length}/5)<br>` +
+    `Accuracy: ${esc(r.acc)}% (${esc(r.accName)})<br>Performance: ${esc(r.nick)}, ${esc(r.wins)} win(s) in ${esc(r.games)} game(s), ${esc(r.great)} GREAT catch(es)<br>` +
+    `Days played: ${esc(r.days)} &middot; last played: ${esc(r.last)} &middot; joined: ${esc(r.joined ? new Date(r.joined).toLocaleDateString() : "-")}<br>Daily rating: ${r.rateAvg ? esc(r.rateAvg) + "/5 average from " + esc(r.rateCount) + " rating(s)" : "none yet"}${r.rateToday ? " &middot; today " + stars5(Math.max(0, Math.min(5, +r.rateToday || 0))) : ""}` +
+    (r.fb ? `<br>Feedback: &ldquo;${esc(r.fb)}&rdquo;` : "") + `</div>`;
+}
+async function renderAdmin() {
+  if (!adminOn) return;
+  const rows = {};
+  Object.assign(rows, registry); // the permanent records first, so a player is never forgotten
+  for (const [k, a] of Object.entries(accounts)) {
+    try {
+      const sm = summarize(JSON.parse(localStorage.getItem(SAVEBASE + k) || "{}"), a.name, a.created), pr = rows[k];
+      if (!pr || sm.games >= pr.games || sm.days >= pr.days) rows[k] = Object.assign({}, pr || {}, sm, { levels: [...new Set([...((pr && pr.levels) || []), ...sm.levels])].sort() });
+    } catch (e) {}
+  }
+  let note = "Players saved on this device.";
+  if (dbH) {
+    try {
+      const snap = await dbH.collection("players").get();
+      snap.docs.forEach(d => { const us = (d.data() || {}).users || {}; for (const [k, v] of Object.entries(us)) if (v && (!rows[k] || (v.updated || 0) > (rows[k].updated || 0))) rows[k] = v; });
+      note = "Players on this device plus players synced from other signed-in viewers.";
+    } catch (e) { note += " (The shared list could not be read.)"; }
+  }
+  const list = Object.values(rows).sort((a, b) => (+b.days || 0) - (+a.days || 0)), avgs = list.filter(r => r.rateAvg).map(r => +r.rateAvg);
+  $("#admInfo").textContent = note + " " + list.length + " player(s), " + list.filter(r => r.regular).length + " regular, average rating " + (avgs.length ? (avgs.reduce((a, b) => a + b, 0) / avgs.length).toFixed(1) + "/5" : "none yet") + ".";
+  $("#admBox").innerHTML = list.map(admCard).join("") || "<p>No players yet.</p>";
+}
+
+/* feedback: bad words are removed with a warning */
+const BAD = ["fuck", "shit", "bitch", "asshole", "bastard", "dick", "cunt", "slut", "whore", "piss", "crap", "damn", "jackass", "dumbass", "bullshit", "motherfucker", "idiot", "stupid", "moron", "loser", "retard", "killyourself"];
+const L33T = { a: "[a@4]", i: "[i1!]", o: "[o0]", e: "[e3]", s: "[s$5]", u: "[uv]", l: "[l1]", t: "[t7]" };
+const BADRE = new RegExp("(^|[^A-Za-z])(" + BAD.map(w => [...w].map(ch => (L33T[ch] || ch) + "+").join("[\\W_]*")).join("|") + ")[A-Za-z0-9@$!]*", "gi");
+function cleanText(t) { let n = 0; const out = t.replace(BADRE, (m, pre) => { n++; return pre; }).replace(/ {2,}/g, " ").trim(); return { out, n }; }
+
+/* daily star rating (once a day), then "recommend to friends" */
+function maybeAsk() {
+  if (!me || st !== "menu" || S.askDay === today()) return;
+  setTimeout(() => {
+    if (me && st === "menu" && S.askDay !== today() && $("#menu").classList.contains("on") && $("#rate").classList.contains("hide") && $("#gift").classList.contains("hide")) showRate();
+  }, 900);
+}
+function askFeedbackAfterLevel3() { // after Level 3 is won, recommend the feedback option (once)
+  if (!me || S.fbAsked || (S.fb && S.fb.text)) return;
+  setTimeout(() => { if (me && st === "end" && won && !S.fbAsked && $("#rate").classList.contains("hide")) showFbAsk(); }, 2200);
+}
+function showFbAsk() {
+  S.fbAsked = 1; save();
+  $("#rate").innerHTML = `<div class="gq"><div class="gicon">&#128221;</div><h2>Tell us what you think!</h2><p>You finished 3 levels. Please share your feedback, it helps make Rabbit Hunt better.</p><div class="dm"><button data-a="fbgo">GIVE FEEDBACK</button><button data-a="fblater">LATER</button></div></div>`;
+  $("#rate").classList.remove("hide");
+}
+function askAfterLevel2() { // rating (then "recommend to friends") appears after the win card of Level 2, once a day
+  if (!me || S.askDay === today()) return;
+  setTimeout(() => { if (me && st === "end" && won && S.askDay !== today() && $("#rate").classList.contains("hide")) showRate(); }, 2200);
+}
+function showRate() {
+  $("#rate").innerHTML = `<div class="gq"><div class="gicon">&#11088;</div><h2>Enjoying Rabbit Hunt?</h2><p>Please give us 5 stars!</p><div id="stars">${[1, 2, 3, 4, 5].map(n => `<button class="star" data-a="rate" data-n="${n}" aria-label="${n} star${n > 1 ? "s" : ""}">&#9733;</button>`).join("")}</div><small>You can rate once a day.</small><button data-a="ratelater">MAYBE LATER</button></div>`;
+  $("#rate").classList.remove("hide");
+}
+const thanksHtml = n => `<div class="gq"><div class="gicon">&#127881;</div><p>Thank you for ${n} star${n > 1 ? "s" : ""}!</p><small>Recommend Rabbit Hunt to your friends:</small><div class="dm"><button data-a="share">SHARE</button><button data-a="copylink">COPY LINK</button><a class="abtn" href="https://wa.me/?text=${encodeURIComponent(SHARE_TEXT)}" target="_blank" rel="noopener">WHATSAPP</a></div><input id="lnk" class="field" readonly value="${APP_LINK}"><button data-a="rateclose">CLOSE</button></div>`;
+
+/* keyboard shortcuts: press again to close */
+addEventListener("keydown", e => {
+  if (e.ctrlKey || e.metaKey || e.altKey || /INPUT|TEXTAREA|SELECT/.test((e.target && e.target.tagName) || "")) return;
+  const k = e.key.toLowerCase(), c = cur();
+  if (k === "c") { rbToggle(); return; }
+  if (k === "p") { if (st === "paused") A.resume(); else pause(); return; }
+  if (k === "escape") { if (st === "menu" && me && c && !["menu", "auth", "admin"].includes(c)) home(); return; }
+  if (st !== "menu" || !me || !["menu", "hist", "shop", "settings", "name", "fb", "levels"].includes(c)) return;
+  const map = { h: "hist", s: "shop", o: "settings", n: "rname", f: "fb" };
+  if (k === "l") { if (c === "levels") home(); else A.levels(); } else if (map[k]) A[map[k]]();
+});
+
+/* ---------- 100 RUN PATTERNS for the carrot rabbit: one per run, none repeats until all 100 were used ---------- */
+const P_START = [["left edge", -.92, -9], ["left side", -.55, -2], ["left of centre", -.2, 2.5], ["centre", .15, -6]]; // [name, start across the screen (-1 = left edge, 1 = right edge), start row]
+const P_SHAPE = ["front-to-back sweep", "back-to-front sweep", "centre weave", "edge-to-edge jumps", "wandering"];
+const P_SPEED = ["steady runner", "sprinter", "stop-and-go", "leaper", "trickster"];
+const P_POOL = [["cruise", "cruise", "zigzag"], ["sprint", "cruise", "sprint", "zigzag"], ["stopgo", "cruise", "stopgo", "zigzag"], ["leap", "cruise", "leap", "zigzag"], ["zigzag", "sprint", "stopgo", "leap", "shadow", "cruise"]];
+function makePattern(i) { // 4 starts x 5 shapes x 5 speed styles = 100 different patterns
+  const s = i % 4, h = Math.floor(i / 4) % 5, v = Math.floor(i / 20), zlo = ZMIN + 2, zhi = ZMAX - 2, n = 10, segs = [];
+  let seed = 977 + i * 7919; const rnd = () => (seed = seed * 16807 % 2147483647) / 2147483647, clamp = z => Math.max(zlo, Math.min(zhi, z));
+  for (let k = 0; k < n; k++) {
+    const f = k / (n - 1), pool = P_POOL[v];
+    const lane = h === 0 ? zhi - f * (zhi - zlo) : h === 1 ? zlo + f * (zhi - zlo) : h === 2 ? (k % 2 ? -.5 : -7.5) : h === 3 ? (k % 2 ? zhi : zlo) : zlo + rnd() * (zhi - zlo);
+    segs.push({ style: pool[Math.floor(rnd() * pool.length)], t: 2.5 + rnd() * 3, lane: clamp(lane + (rnd() - .5) * 2) });
+  }
+  return { id: i, name: P_START[s][0] + " start, " + P_SHAPE[h] + ", " + P_SPEED[v], u0: P_START[s][1], z0: clamp(P_START[s][2]), segs };
+}
+function nextPatternId() {
+  S.pbag = (Array.isArray(S.pbag) ? S.pbag : []).filter(i => i >= 0 && i < 100);
+  if (!S.pbag.length) {
+    S.pbag = [...Array(100).keys()];
+    for (let i = 99; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [S.pbag[i], S.pbag[j]] = [S.pbag[j], S.pbag[i]]; }
+    if (S.pbag[99] === S.lastP) S.pbag.unshift(S.pbag.pop());
+  }
+  S.lastP = S.pbag.pop(); save(); return S.lastP;
+}
+const segFactor = () => SPAN[lvl] * (L.span || 1);
+
+/* ---------- IDEA icon: 3 ideas, then 3 more 3 hours after they are used up ---------- */
+const STYLE_TXT = { cruise: "runs steadily", zigzag: "zigzags between rows", sprint: "sprints ahead", stopgo: "slows down, then bursts ahead", leap: "makes big jumps", shadow: "hides right beside another rabbit" };
+const STYLE_ICON = { cruise: "\u27A1\uFE0F", zigzag: "\u3030\uFE0F", sprint: "\u26A1", stopgo: "\u23EF\uFE0F", leap: "\u{1F998}", shadow: "\u{1F407}" };
+const STYLE_COL = { cruise: "#2e9e4f", zigzag: "#d9a400", sprint: "#d62f2f", stopgo: "#7b3fc4", leap: "#1e88c8", shadow: "#777" };
+const laneName = z => z < -6.7 ? "the back rows" : z < -1.3 ? "the middle rows" : "the front rows";
+let ideaT = 0, ist = "play"; // ist = what the game was doing when the idea froze it
+function ideaState() {
+  const I = S.idea || (S.idea = { left: 3, at: 0 });
+  if (I.left <= 0 && I.at && Date.now() >= I.at + 3 * 36e5) { I.left = 3; I.at = 0; save(); }
+  return I;
+}
+function ideaBadge() { const I = ideaState(); $("#ideaBadge").textContent = I.left > 0 ? I.left : "\u23F3"; }
+setInterval(() => { if (me) ideaBadge(); }, 30000);
+function upcoming() { // the pattern's next moves, with their start times
+  const f = segFactor(), ok = STYLES.filter(s => s[1] <= (L.tier || lvl)).map(s => s[0]), n = pat.segs.length, ev = [];
+  const fresh = th.t <= 0; let at = 0; if (!fresh) { at = Math.max(.5, th.t); ev.push({ at: 0, dur: at, style: th.style, lane: pat.segs[(th.idx - 1 + n) % n].lane }); }
+  for (let j = 0; j < (fresh ? 4 : 3); j++) { const sg = pat.segs[(th.idx + j) % n], dur = sg.t * f; ev.push({ at, dur, style: ok.includes(sg.style) ? sg.style : "cruise", lane: sg.lane }); at += dur; }
+  return { ev, total: at };
+}
+function showIdea(left) {
+  const { ev, total } = upcoming(), W = 280, H = 96, zlo = ZMIN + 2, zhi = ZMAX - 2;
+  const X = t => 12 + (W - 24) * t / total, Y = z => 10 + (H - 20) * (z - zlo) / (zhi - zlo);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="The rabbit's next moves"><text x="4" y="10" font-size="9" fill="#777">back</text><text x="4" y="${H - 3}" font-size="9" fill="#777">front</text>`;
+  ev.forEach((e, i) => {
+    const x0 = X(e.at), x1 = X(e.at + e.dur), y = Y(e.lane), ty = y < 28 ? y + 18 : y - 7;
+    if (i) svg += `<line x1="${x0}" y1="${Y(ev[i - 1].lane)}" x2="${x0}" y2="${y}" stroke="#aaa" stroke-width="2" stroke-dasharray="3 3"/>`;
+    svg += `<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="${STYLE_COL[e.style]}" stroke-width="5" stroke-linecap="round"/><text x="${(x0 + x1) / 2}" y="${ty}" font-size="13" text-anchor="middle">${STYLE_ICON[e.style]}</text>`;
+  });
+  $("#ideaName").textContent = ideaWho + "Pattern " + (pat.id + 1) + " of 100: " + pat.name;
+  $("#ideaMap").innerHTML = svg + "</svg>";
+  $("#ideaTxt").innerHTML = ev.map((e, i) => (i ? "In " + Math.round(e.at) + "s" : "Now") + ": " + STYLE_ICON[e.style] + " " + STYLE_TXT[e.style] + " in " + laneName(e.lane) + ".").join("<br>");
+  $("#ideaLeft").textContent = left > 0 ? "Ideas left: " + left : "That was your last idea. 3 new ideas arrive in 3 hours.";
+  if (!$("#ideaGo")) { const b = document.createElement("button"); b.id = "ideaGo"; b.dataset.a = "ideaclose"; b.textContent = "CONTINUE"; b.style.marginTop = "8px"; $("#idea .ic").appendChild(b); const n = document.createElement("small"); n.id = "ideaPause"; n.textContent = "\u23F8 The game is paused and the screen is hidden while you look at this idea, so it is fair."; $("#idea .ic").insertBefore(n, $("#ideaLeft")); }
+  $("#idea").classList.remove("hide"); clearTimeout(ideaT); // no timer: the game waits until you tap CONTINUE
+}
+function useIdea() {
+  const I = ideaState(), say = t => fx(t, innerWidth / 2, innerHeight * .4, "g");
+  if (st === "idea") return;
+  if (st !== "play" && st !== "count") return say("Start a level, then tap the \u{1F4A1} for an idea");
+  if (I.left <= 0) { const m = Math.ceil((I.at + 3 * 36e5 - Date.now()) / 6e4); return say("Next 3 ideas in " + Math.floor(m / 60) + "h " + (m % 60) + "m"); }
+  I.left--; if (I.left === 0) I.at = Date.now(); save(); ideaBadge(); const open = thieves.slice(0, need).filter(T => !T.caught), T = open[ideaIdx++ % Math.max(1, open.length)] || thieves[0];
+  ideaWho = need > 1 && T.look ? "Rabbit " + (T.id + 1) + " (" + T.look.rc + " rabbit, " + T.look.sc + " scarf): " : ""; useThief(T); showIdea(I.left); useThief(thieves[0]);
+  ist = st; st = "idea"; // the screen stops at this moment: crowd, timer and countdown wait
+}
+
+/* ---------- the carrot rabbit's funny reactions ---------- */
+const RPOOL = { // reactions pick random emoji and words; "laugh" shows three laughing faces at once
+  laugh: { n: 3, em: ["\u{1F923}", "\u{1F602}", "\u{1F606}", "\u{1F604}", "\u{1F61C}", "\u{1F61D}", "\u{1F92A}", "\u{1F639}"], msg: ["Too slow!", "Better luck next time!", "Catch me if you can!", "Hehe, nice try!", "You can't catch me!"] },
+  unamused: { n: 1, em: ["\u{1F612}", "\u{1F611}", "\u{1F644}", "\u{1F610}", "\u{1F928}", "\u{1F60F}"], msg: ["Seriously?", "Wrong one...", "Not me!", "Really?"] },
+  angry: { n: 1, em: ["\u{1F620}", "\u{1F621}", "\u{1F624}", "\u{1F92C}"], msg: ["So close!", "Hey, watch it!", "Too close for comfort!"] },
+  cry: { n: 1, em: ["\u{1F62D}", "\u{1F622}", "\u{1F97A}", "\u{1F63F}", "\u{1F625}"], msg: ["You got me!", "Okay, okay, you win!", "Waaah, caught!"] }
+};
+function pickReact(kind) {
+  const p = RPOOL[kind], pool = [...p.em]; let em = "";
+  for (let i = 0; i < p.n; i++) em += pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
+  return [em, p.msg[Math.floor(Math.random() * p.msg.length)]];
+}
+const bubbles = [], _bv = new THREE.Vector3();
+function react(kind, anchor) { // anchor: "thief" or the number of a crowd rabbit
+  const [em, msg] = pickReact(kind), el = document.createElement("div"); el.className = "emo";
+  el.innerHTML = `<div class="emo-in">${em}<small>${msg}</small></div>`; document.body.appendChild(el); bubbles.push({ el, anchor, born: performance.now() });
+}
+function wrongReact(i) {
+  const r = rab[i]; if (!r) return;
+  let best = 99, near = null;
+  for (const T of thieves) { if (!T.g.visible || T.caught) continue; const dd = Math.hypot(r.x - T.g.position.x, (r.dz === undefined ? r.z : r.dz) - T.g.position.z); if (dd < best) { best = dd; near = T; } }
+  if (near && best < 3) react("angry", near); else react("unamused", i); // a rabbit right next to a thief makes that thief angry
+}
+function updateBubbles() {
+  const now = performance.now();
+  for (let i = bubbles.length - 1; i >= 0; i--) {
+    const b = bubbles[i], isT = typeof b.anchor !== "number", r = isT ? null : rab[b.anchor];
+    if (now - b.born > 2800 || (!isT && !r)) { b.el.remove(); bubbles.splice(i, 1); continue; }
+    if (r) _bv.set(r.x, 1.7, r.dz === undefined ? r.z : r.dz); else { _bv.set(.4, 2.3, 0); (typeof b.anchor === "object" ? b.anchor : openThief()).g.localToWorld(_bv); }
+    _bv.project(cam);
+    if (_bv.z > 1) { b.el.style.display = "none"; continue; }
+    b.el.style.display = ""; b.el.style.left = (_bv.x * .5 + .5) * innerWidth + "px"; b.el.style.top = (-_bv.y * .5 + .5) * innerHeight + "px";
+  }
+}
+
+/* ---------- permanent player records (kept even if a player resets their own progress) ---------- */
+const REGKEY = "rabbitrun.registry.v1"; let registry = {};
+try { registry = JSON.parse(localStorage.getItem(REGKEY) || "{}") || {}; } catch (e) { registry = {}; }
+function remember() {
+  for (const [k, a] of Object.entries(accounts)) {
+    try {
+      const sm = summarize(k === me ? S : JSON.parse(localStorage.getItem(SAVEBASE + k) || "{}"), a.name, a.created), pr = registry[k];
+      if (!pr || sm.games >= pr.games || sm.days >= pr.days) registry[k] = Object.assign({}, pr || {}, sm, { levels: [...new Set([...((pr && pr.levels) || []), ...sm.levels])].sort() });
+    } catch (e) {}
+  }
+  try { localStorage.setItem(REGKEY, JSON.stringify(registry)); } catch (e) {}
+}
+
+/* ---------- LEVEL LOOKS (bronze, silver, gold, platinum, diamond) ---------- */
+// Free while you play that level. To keep using a look anywhere, buy it in the shop.
+const PACK = {
+  1: { theme: "meadow", rabbit: ["brown"], scarf: ["orange"] },
+  2: { theme: "snow", rabbit: ["silver", "blue"], scarf: ["navy", "white"] },
+  3: { theme: "autumn", rabbit: ["golden", "orange", "pink"], scarf: ["yellow", "green", "black"] },
+  4: { theme: "rainy", rabbit: ["lavender", "teal", "gray", "mint"], scarf: ["purple", "teal", "lime", "pink"] },
+  5: { theme: "night", rabbit: ["red", "black", "mint", "pink", "cream"], scarf: ["gold", "white", "lime", "orange", "purple"] }
+};
+const THEME_NAME = { meadow: "Sunny Meadow", snow: "Snow", autumn: "Autumn", rainy: "Rainy", night: "Night" };
+function dressThieves() { // every thief of a level gets a different rabbit color and a different scarf color
+  const pk = PACK[lvl], custom = S.eq.rabbit !== "white" || S.eq.scarf !== "red" || S.eq.design !== "plain"; // thief 1 keeps the look you bought and equipped
+  const rl = pk.rabbit.filter(c => !custom || c !== S.eq.rabbit), sl = pk.scarf.filter(c => !custom || c !== S.eq.scarf), dl = ["plain", "striped", "dotted", "check", "star"];
+  for (let k = 0; k < need; k++) {
+    const mine = custom && k === 0, j = custom ? k - 1 : k, T = thieves[k];
+    const rc = mine ? S.eq.rabbit : rl[j % rl.length], sc = mine ? S.eq.scarf : sl[j % sl.length], ds = mine ? S.eq.design : dl[k % dl.length];
+    T.mat.color.set(sw("rabbit", rc)); T.scarfMat.map = scarfTex(sw("scarf", sc), ds); T.scarfMat.needsUpdate = true; T.look = { rc, sc, ds };
+  }
+}
+const openThief = () => thieves.slice(0, need).find(T => T.g.visible && !T.caught) || lastCaught || thieves[0];
+function renderCap() {
+  const dots = thieves.slice(0, need).map(T => `<i class="dot${T.caught ? " got" : ""}" style="background:${T.look ? sw("scarf", T.look.sc) : "#e53935"}"></i>`).join("");
+  $("#capP").innerHTML = "&#129365; " + caughtN + "/" + need + " " + dots;
+}
+function onCatch(T) { // you clicked one of the thieves
+  if (!T || T.caught || (st !== "play")) return;
+  T.caught = true; caughtN++; lastCaught = T; T.glow.visible = true; renderCap(); react("cry", T);
+  if (caughtN >= need) { T.celeb = 1e9; caught(); }
+  else { T.celeb = 1.8; SFX.coin(); vib(40); fx(caughtN + " of " + need + " caught!", innerWidth / 2, innerHeight * .3, "g"); }
+}
+function celebrate(T, d) { // a caught thief hops for joy, then leaves (the last one stays for the win)
+  const now = performance.now(), g = T.g;
+  g.position.y = Math.abs(Math.sin(now / 160)) * .7 + .1; flutter(now / 160);
+  T.glow.position.set(g.position.x, .05, g.position.z); T.glow.scale.setScalar(1 + .15 * Math.sin(now / 120)); T.shadow.position.set(g.position.x, .02, g.position.z);
+  T.celeb -= d; if (T.celeb <= 0) g.visible = T.shadow.visible = T.glow.visible = false;
+}
+function animThief(d) {
+  for (const T of thieves) {
+    if (!T.g.visible) continue;
+    useThief(T);
+    if (T.caught) celebrate(T, d); else animOne(d);
+  }
+  useThief(thieves[0]);
+}
+const buyCost = n => [200, 400, 600, 1200][n] || 1200 * Math.pow(2, n - 3);
+
+function pickNear() { // the next crowd rabbit to hide beside: one that is already close, so the thief never darts across the screen
+  const px = thief.position.x, pz = th.z, n = rab.length;
+  for (let k = 0; k < 80; k++) { const i = 50 + Math.floor(Math.random() * (n - 50)), r = rab[i]; if (Math.abs(r.x - px) < 12 && Math.abs((r.dz === undefined ? r.z : r.dz) - pz) < 6) return i; }
+  return 50 + Math.floor(Math.random() * (n - 50));
+}
+
+/* ---------- BOOT ---------- */
+freshRun(); S.diff = diff = "medium"; // every new visit starts again from Level 1, 3 whole hearts and Medium mode
+size(); look(); buildCrowd(700, LV[1]); thief.visible = false; renderMode(); stats(); requestAnimationFrame(frame); authBoot(); startShared();
+setTimeout(() => { if (!renderedFrames) fatal("The 3D view did not start. Please reload. If it still fails, try another browser (Chrome, Safari or Firefox) or turn on hardware acceleration."); }, 6000);
+})();
+</script>
+</body>
+</html>
